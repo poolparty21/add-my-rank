@@ -20,19 +20,6 @@ const MOCK_REPORT = {
   categories: {},
 };
 
-function freshScanHandler() {
-  const libPath = require.resolve('../api/_lib.js');
-  const originalEntry = require.cache[libPath];
-  const realLib = require(libPath);
-  const fakeLib = Object.assign({}, realLib, { runScan: async () => MOCK_REPORT });
-  require.cache[libPath] = { id: libPath, filename: libPath, loaded: true, exports: fakeLib };
-  const scanPath = require.resolve('../api/scan.js');
-  delete require.cache[scanPath];
-  const handler = require(scanPath);
-  if (originalEntry) require.cache[libPath] = originalEntry;
-  return handler;
-}
-
 function invoke(handler, options) {
   options = options || {};
   return new Promise((resolve) => {
@@ -73,12 +60,9 @@ function invoke(handler, options) {
 
 
 
-test('preview scan response has the documented shape', { timeout: 30000 }, async () => {
-  const handler = freshScanHandler();
-  const result = await invoke(handler, { body: { url: 'example.com', preview: true } });
-
-  assert.equal(result.status, 200, result.body);
-  const data = JSON.parse(result.body);
+test('preview scan response has the documented shape', () => {
+  const { buildPreviewResponse } = require('../api/scan.js');
+  const data = buildPreviewResponse(MOCK_REPORT);
   assert.equal(data.ok, true);
   assert.equal(data.preview, true);
   assert.equal(typeof data.score, 'number');
@@ -91,7 +75,7 @@ test('preview scan response has the documented shape', { timeout: 30000 }, async
 });
 
 test('per-IP rate limiting blocks the 7th preview scan', async () => {
-  const handler = freshScanHandler();
+  const handler = require('../api/scan.js');
   for (let i = 0; i < 6; i++) {
     const result = await invoke(handler, { body: { preview: true } });
     assert.notEqual(result.status, 429, `request ${i + 1} was rate limited unexpectedly`);

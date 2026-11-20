@@ -126,6 +126,23 @@ function fixSnippet(report) {
   return { issue: first.title, label: chosen.label, code: chosen.code };
 }
 
+/** Pure shaping of the free-preview API response from a completed report. */
+function buildPreviewResponse(report) {
+  const topIssues = (report.actions || []).slice(0, 3).map((f) => ({
+    id: f.id, title: f.title, severity: f.severity, effort: f.effort,
+    fix: f.fix, category: f.category,
+  }));
+  return {
+    ok: true,
+    preview: true,
+    score: report.score,
+    grade: report.grade,
+    summary: report.summary,
+    topIssues,
+    fixSnippet: fixSnippet(report),
+  };
+}
+
 module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') {
     res.writeHead(204, { 'access-control-allow-methods': 'POST, OPTIONS', 'access-control-allow-headers': 'content-type' });
@@ -206,19 +223,7 @@ module.exports = async function handler(req, res) {
 
     // Free preview returns only the score, top three issues and one fix.
     if (body.preview) {
-      const topIssues = (report.actions || []).slice(0, 3).map((f) => ({
-        id: f.id, title: f.title, severity: f.severity, effort: f.effort,
-        fix: f.fix, category: f.category,
-      }));
-      return json(res, 200, {
-        ok: true,
-        preview: true,
-        score: report.score,
-        grade: report.grade,
-        summary: report.summary,
-        topIssues,
-        fixSnippet: fixSnippet(report),
-      });
+      return json(res, 200, buildPreviewResponse(report));
     }
 
     const token = signToken(report);
@@ -240,3 +245,5 @@ module.exports = async function handler(req, res) {
     return json(res, 500, { ok: false, error: 'Something went wrong during the scan. Please try again.' });
   }
 };
+
+module.exports.buildPreviewResponse = buildPreviewResponse;
