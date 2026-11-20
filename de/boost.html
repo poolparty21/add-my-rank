@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="de" data-locale="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<!-- locale-head -->
+<link rel="canonical" href="https://add-my-rank.vercel.app/de/boost">
+<link rel="alternate" hreflang="en" href="https://add-my-rank.vercel.app/boost">
+<link rel="alternate" hreflang="de" href="https://add-my-rank.vercel.app/de/boost">
+<link rel="alternate" hreflang="pl" href="https://add-my-rank.vercel.app/pl/boost">
+<link rel="alternate" hreflang="fr" href="https://add-my-rank.vercel.app/fr/boost">
+<link rel="alternate" hreflang="x-default" href="https://add-my-rank.vercel.app/boost">
+<!-- /locale-head -->
+<title>Meinen Rang boosten — Add My Rank · SiteBoost 300</title>
+<meta name="description" content="Melde deine Seite bei 14 Suchmaschinen an und erhalte den vollständigen Bericht mit 17 Checks.">
+<!-- og-unfurl: mirrors the title/description above, localized by build-locales -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Meinen Rang boosten — Add My Rank · SiteBoost 300">
+<meta property="og:description" content="Melde deine Seite bei 14 Suchmaschinen an und erhalte den vollständigen Bericht mit 17 Checks.">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
+  body { font-family: 'Inter', system-ui, sans-serif; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+  .grid-bg {
+    background-image:
+      linear-gradient(rgba(99,102,241,0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(99,102,241,0.07) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+  .glass { background: rgba(255,255,255,0.85); backdrop-filter: blur(14px); }
+  .glow { box-shadow: 0 12px 40px rgba(79,70,229,0.14), 0 2px 10px rgba(168,85,247,0.10); }
+  .engine-row { transition: border-color .15s ease, background .15s ease; }
+  .engine-row.on { border-color: rgba(99,102,241,.55); background: rgba(99,102,241,.08); }
+  select, input { color-scheme: light; }
+  .lang-btn { opacity: .55; transition: opacity .15s ease, border-color .15s ease; }
+  .lang-btn:hover { opacity: 1; }
+  .lang-on { opacity: 1; border-color: rgba(129,140,248,.7) !important; color: #312e81; background: rgba(99,102,241,.12); }
+  .fade-in { animation: fin .4s ease both; }
+  @keyframes fin { from { opacity: 0; transform: translateY(10px);} to { opacity:1; transform:none;} }
+</style>
+</head>
+<body class="bg-[#f6f7ff] text-slate-700 antialiased" data-title-key="boost.meta.title" data-desc-key="boost.meta.description">
+
+<!-- ================= NAV ================= -->
+<nav class="sticky top-0 z-40 glass border-b border-slate-200">
+  <div class="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between">
+    <a href="/de/" class="flex items-center gap-2.5">
+      <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 to-fuchsia-600 grid place-items-center font-black text-white text-lg">▲</div>
+      <span class="font-extrabold text-lg tracking-tight text-slate-900">Add My <span class="text-indigo-600">Rank</span></span>
+    </a>
+    <span class="hidden md:block mono text-[11px] text-slate-600 tracking-widest" data-i18n="boost.step">SITEBOOST 300 · SCHRITT 1 VON 2</span>
+    <div class="flex items-center gap-3">
+      <div class="hidden sm:flex items-center gap-1 mono text-[10px]" role="group" data-i18n-aria="lang.label" aria-label="Sprache">
+        <button type="button" data-lang="en" class="lang-btn px-2 py-1 rounded-lg border border-slate-200">EN</button>
+        <button type="button" data-lang="de" class="lang-btn px-2 py-1 rounded-lg border border-slate-200">DE</button>
+        <button type="button" data-lang="pl" class="lang-btn px-2 py-1 rounded-lg border border-slate-200">PL</button>
+        <button type="button" data-lang="fr" class="lang-btn px-2 py-1 rounded-lg border border-slate-200">FR</button>
+      </div>
+      <a href="/de/#faq" class="text-sm text-slate-600 hover:text-slate-900 transition" data-i18n="boost.questions">Fragen?</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ================= BOOST FORM ================= -->
+<header class="grid-bg relative overflow-hidden">
+  <div class="absolute -top-40 left-1/2 -translate-x-1/2 w-[800px] h-[380px] bg-indigo-300/30 blur-[130px] rounded-full pointer-events-none"></div>
+
+  <div class="relative max-w-6xl mx-auto px-5 pt-14 pb-24">
+    <div class="text-center max-w-2xl mx-auto fade-in">
+      <div class="inline-flex items-center gap-2 text-xs font-semibold mono text-emerald-700 border border-emerald-200 bg-emerald-50 rounded-full px-3.5 py-1.5 mb-5">
+        <span data-i18n="boost.badge">7 $ · EINE ZAHLUNG · KEIN ABO</span>
+      </div>
+      <h1 class="text-4xl md:text-5xl font-black tracking-tight text-slate-900 leading-tight" data-i18n="boost.title">Mein Ranking boosten.</h1>
+      <p class="mt-4 text-slate-600 text-lg" data-i18n="boost.sub">Sag uns, wo du zu finden bist. Wir melden deine Seite bei jeder Suchmaschine an, die dein Markt braucht — offiziell — und prüfen, dass nichts die Crawler blockiert.</p>
+    </div>
+
+    <div class="mt-12 grid lg:grid-cols-[1.35fr,0.65fr] gap-6 items-start">
+
+      <!-- LEFT: form -->
+      <div class="glass border border-slate-200 rounded-3xl p-7 md:p-9 fade-in space-y-8">
+
+        <!-- Website + email -->
+        <div class="grid md:grid-cols-2 gap-5">
+          <div>
+            <label for="inp-url" class="text-[11px] uppercase tracking-widest text-slate-600 font-bold" data-i18n="boost.urlLabel">Deine Website *</label>
+            <input id="inp-url" type="url" placeholder="https://deinefirma.de" data-i18n-placeholder="boost.urlPlaceholder"
+              class="mt-2 w-full bg-white border border-slate-200 rounded-xl px-4 py-3.5 text-sm text-slate-900 placeholder-slate-400 focus:border-indigo-400 outline-none">
+          </div>
+          <div>
+            <label for="inp-email" class="text-[11px] uppercase tracking-widest text-slate-600 font-bold" data-i18n="boost.emailLabel">E-Mail für den Bericht *</label>
+            <input id="inp-email" type="email" placeholder="du@deinefirma.de" data-i18n-placeholder="boost.emailPlaceholder"
+              class="mt-2 w-full bg-white border border-slate-200 rounded-xl px-4 py-3.5 text-sm text-slate-900 placeholder-slate-400 focus:border-indigo-400 outline-none">
+          </div>
+        </div>
+
+        <!-- Country / language / medium -->
+        <div class="grid md:grid-cols-2 gap-5">
+          <div>
+            <label for="sel-country" class="text-[11px] uppercase tracking-widest text-slate-600 font-bold" data-i18n="boost.country">Land</label>
+            <select id="sel-country" onchange="updateMarket()"
+              class="mt-2 w-full bg-white border border-slate-200 rounded-xl px-4 py-3.5 text-sm text-slate-900 focus:border-indigo-400 outline-none">
+              <option value="US">United States</option><option value="GB">United Kingdom</option>
+              <option value="DE">Germany</option><option value="FR">France</option>
+              <option value="ES">Spain</option><option value="IT">Italy</option>
+              <option value="NL">Netherlands</option><option value="BR">Brazil</option>
+              <option value="MX">Mexico</option><option value="CA">Canada</option>
+              <option value="AU">Australia</option><option value="IN">India</option>
+              <option value="RU">Russia</option><option value="CN">China</option>
+              <option value="KR">South Korea</option><option value="CZ">Czech Republic</option>
+              <option value="JP">Japan</option><option value="TW">Taiwan</option>
+              <option value="WW">Other / worldwide</option>
+            </select>
+          </div>
+          <div>
+            <label for="sel-language" class="text-[11px] uppercase tracking-widest text-slate-600 font-bold" data-i18n="boost.language">Sprache</label>
+            <select id="sel-language"
+              class="mt-2 w-full bg-white border border-slate-200 rounded-xl px-4 py-3.5 text-sm text-slate-900 focus:border-indigo-400 outline-none">
+              <option>English</option><option>Spanish</option><option>German</option><option>French</option>
+              <option>Portuguese</option><option>Dutch</option><option>Italian</option><option>Russian</option>
+              <option>Chinese</option><option>Korean</option><option>Czech</option><option>Japanese</option><option>Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="text-[11px] uppercase tracking-widest text-slate-600 font-bold" data-i18n="boost.medium">So finden dich Kunden</label>
+          <div class="mt-2 grid grid-cols-2 gap-3">
+            <button type="button" data-medium="web" onclick="pickMedium(this)"
+              class="medium-btn border border-slate-200 rounded-xl px-4 py-3.5 text-sm font-semibold text-slate-700 hover:border-indigo-300 transition text-left">
+              <span data-i18n="boost.mediumWeb">🌐 Websuche</span>
+            </button>
+            <button type="button" data-medium="phone" onclick="pickMedium(this)"
+              class="medium-btn border border-slate-200 rounded-xl px-4 py-3.5 text-sm font-semibold text-slate-700 hover:border-indigo-300 transition text-left">
+              <span data-i18n="boost.mediumPhone">📞 Telefon & lokal</span>
+            </button>
+          </div>
+          <p class="mt-2 text-xs text-slate-600" data-i18n="boost.mediumNote">Telefon & lokal ergänzt Prüfungen für lokale Einträge (Maps, Verzeichnisse, Unternehmensprofile).</p>
+        </div>
+
+        <!-- Engine fleet -->
+        <div>
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <label class="text-[11px] uppercase tracking-widest text-slate-600 font-bold" data-i18n="boost.fleet">Deine Suchmaschinen</label>
+            <span id="engine-count-label" class="mono text-xs text-emerald-700 border border-emerald-200 bg-emerald-50 rounded-lg px-2.5 py-1" data-i18n="boost.selected">{n}/14 ausgewählt</span>
+          </div>
+          <p id="market-note" class="mt-2 text-xs text-indigo-700 hidden"></p>
+
+          <div class="mt-4 space-y-2">
+            <!-- Tier 1 — locked -->
+            <div class="text-[10px] uppercase tracking-widest text-slate-600 font-bold pt-1">Tier 1 — always included</div>
+            <div class="engine-row on flex items-center gap-3 border border-slate-200 rounded-xl px-4 py-3 opacity-80">
+              <input type="checkbox" checked disabled class="accent-indigo-500 w-4 h-4">
+              <span class="text-sm font-semibold text-slate-900">Google</span><span class="ml-auto mono text-[10px] text-slate-600">official · Search Console</span>
+            </div>
+            <div class="engine-row on flex items-center gap-3 border border-slate-200 rounded-xl px-4 py-3 opacity-80">
+              <input type="checkbox" checked disabled class="accent-indigo-500 w-4 h-4">
+              <span class="text-sm font-semibold text-slate-900">Bing</span><span class="ml-auto mono text-[10px] text-slate-600">official · Webmaster Tools · feeds DDG + Yahoo</span>
+            </div>
+            <div class="engine-row on flex items-center gap-3 border border-slate-200 rounded-xl px-4 py-3 opacity-80">
+              <input type="checkbox" checked disabled class="accent-indigo-500 w-4 h-4">
+              <span class="text-sm font-semibold text-slate-900">DuckDuckGo</span><span class="ml-auto mono text-[10px] text-slate-600">via Bing index</span>
+            </div>
+
+            <!-- Tier 2 -->
+            <div class="text-[10px] uppercase tracking-widest text-slate-600 font-bold pt-3">Tier 2 — regional giants</div>
+            <div class="grid sm:grid-cols-2 gap-2">
+              <label class="engine-row on flex items-center gap-3 border border-slate-200 rounded-xl px-4 py-3 cursor-pointer">
+                <input type="checkbox" checked onchange="countEngines()" data-engine="Yandex" class="eng accent-indigo-500 w-4 h-4">
+                <span class="text-sm font-semibold text-slate-900">🇷🇺 Yandex</span><span class="ml-auto mono text-[10px] text-slate-600">IndexNow</span>
+              </label>
+              <label class="engine-row on flex items-center gap-3 border border-slate-200 rounded-xl px-4 py-3 cursor-pointer">
+                <input type="checkbox" checked onchange="countEngines()" data-engine="Baidu" class="eng accent-indigo-500 w-4 h-4">
+                <span class="text-sm font-semibold text-slate-900">🇨🇳 Baidu</span><span class="ml-auto mono text-[10px] text-slate-600">Zhanzhang</span>
+              </label>
+              <label class="engine-row on flex items-center gap-3 border border-slate-200 rounded-xl px-4 py-3 cursor-pointer">
+                <input type="checkbox" checked onchange="countEngines()" data-engine="Naver" class="eng accent-indigo-500 w-4 h-4">
+                <span class="text-sm font-semibold text-slate-900">🇰🇷 Naver</span><span class="ml-auto mono text-[10px] text-slate-600">Search Advisor</span>
+              </label>
+              <label class="engine-row on flex items-center gap-3 border border-slate-200 rounded-xl px-4 py-3 cursor-pointer">
+                <input type="checkbox" checked onchange="countEngines()" data-engine="Seznam" class="eng accent-indigo-500 w-4 h-4">
+                <span class="text-sm font-semibold text-slate-900">🇨🇿 Seznam</span><span class="ml-auto mono text-[10px] text-slate-600">IndexNow</span>
+              </label>
+              <label class="engine-row on flex items-center gap-3 border border-slate-200 rounded-xl px-4 py-3 cursor-pointer">
+                <input type="checkbox" checked onchange="countEngines()" data-engine="Yahoo Japan" class="eng accent-indigo-500 w-4 h-4">
+                <span class="text-sm font-semibold text-slate-900">🇯🇵 Yahoo! Japan</span><span class="ml-auto mono text-[10px] text-slate-600">submission</span>
+              </label>
+              <label class="engine-row on flex items-center gap-3 border border-slate-200 rounded-xl px-4 py-3 cursor-pointer">
+                <input type="checkbox" checked onchange="countEngines()" data-engine="Yahoo Taiwan" class="eng accent-indigo-500 w-4 h-4">
+                <span class="text-sm font-semibold text-slate-900">🇹🇼 Yahoo! Taiwan</span><span class="ml-auto mono text-[10px] text-slate-600">submission</span>
+              </label>
+            </div>
+
+            <!-- Tier 3 -->
+            <div class="text-[10px] uppercase tracking-widest text-slate-600 font-bold pt-3">Tier 3 — independent & privacy engines</div>
+            <div class="grid sm:grid-cols-2 gap-2">
+              <label class="engine-row on flex items-center gap-3 border border-slate-200 rounded-xl px-4 py-3 cursor-pointer">
+                <input type="checkbox" checked onchange="countEngines()" data-engine="Mojeek" class="eng accent-fuchsia-500 w-4 h-4">
+                <span class="text-sm font-semibold text-slate-900">Mojeek</span><span class="ml-auto mono text-[10px] text-slate-600">own crawler</span>
+              </label>
+              <label class="engine-row on flex items-center gap-3 border border-slate-200 rounded-xl px-4 py-3 cursor-pointer">
+                <input type="checkbox" checked onchange="countEngines()" data-engine="Brave Search" class="eng accent-fuchsia-500 w-4 h-4">
+                <span class="text-sm font-semibold text-slate-900">Brave Search</span><span class="ml-auto mono text-[10px] text-slate-600">own index</span>
+              </label>
+              <label class="engine-row on flex items-center gap-3 border border-slate-200 rounded-xl px-4 py-3 cursor-pointer">
+                <input type="checkbox" checked onchange="countEngines()" data-engine="Startpage" class="eng accent-fuchsia-500 w-4 h-4">
+                <span class="text-sm font-semibold text-slate-900">Startpage</span><span class="ml-auto mono text-[10px] text-slate-600">submission</span>
+              </label>
+              <label class="engine-row on flex items-center gap-3 border border-slate-200 rounded-xl px-4 py-3 cursor-pointer">
+                <input type="checkbox" checked onchange="countEngines()" data-engine="Marginalia" class="eng accent-fuchsia-500 w-4 h-4">
+                <span class="text-sm font-semibold text-slate-900">Marginalia</span><span class="ml-auto mono text-[10px] text-slate-600">own crawler</span>
+              </label>
+              <label class="engine-row on flex items-center gap-3 border border-slate-200 rounded-xl px-4 py-3 cursor-pointer">
+                <input type="checkbox" checked onchange="countEngines()" data-engine="Stract" class="eng accent-fuchsia-500 w-4 h-4">
+                <span class="text-sm font-semibold text-slate-900">Stract</span><span class="ml-auto mono text-[10px] text-slate-600">open index</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: order summary -->
+      <div class="glass border border-indigo-300 rounded-3xl p-7 lg:sticky lg:top-24 fade-in relative overflow-hidden">
+        <div class="absolute -top-20 -right-20 w-56 h-56 bg-fuchsia-300/25 blur-[80px] rounded-full pointer-events-none"></div>
+        <div class="relative">
+          <div class="text-xs uppercase tracking-widest text-indigo-700 font-bold">SiteBoost 300</div>
+          <div class="mt-2 flex items-end gap-1">
+            <span class="text-5xl font-black text-slate-900">$7</span>
+            <span class="text-slate-600 mb-1.5" data-i18n="boost.summaryOneTime">einmalig</span>
+          </div>
+          <ul class="mt-6 space-y-3 text-sm text-slate-700">
+            <li class="flex gap-2.5"><svg class="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span id="sum-engines-label" data-i18n="boost.summary1">{n} Anmeldungen bei Suchmaschinen, offizielle Kanäle</span></li>
+            <li class="flex gap-2.5"><svg class="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span data-i18n="boost.summary2">IndexNow-Ping an alle unterstützenden Maschinen</span></li>
+            <li class="flex gap-2.5"><svg class="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span data-i18n="boost.summary3">Crawlability-Check: robots, Sitemap, Meta</span></li>
+            <li class="flex gap-2.5"><svg class="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span data-i18n="boost.summary4">Bericht per E-Mail in wenigen Minuten</span></li>
+          </ul>
+          <div class="mt-6 pt-5 border-t border-slate-200 flex justify-between text-sm">
+            <span class="text-slate-600" data-i18n="boost.total">Heute fällig</span>
+            <span class="font-black text-slate-900 mono">$7.00</span>
+          </div>
+          <button id="pay-btn" onclick="startCheckout()" class="mt-6 w-full bg-gradient-to-r from-indigo-600 to-fuchsia-600 hover:opacity-90 transition text-white font-bold text-lg py-4 rounded-2xl glow disabled:opacity-60 disabled:cursor-not-allowed">
+            <span data-i18n="boost.pay">7 $ zahlen & Boost starten →</span>
+          </button>
+          <p class="mt-4 text-center text-[11px] text-slate-600 leading-relaxed" data-i18n="boost.payNote">Sichere Kartenzahlung über Stripe. Der Scan startet, sobald die Zahlung eingeht.</p>
+          <div id="scan-status" class="mt-4 hidden text-center text-xs">
+            <div class="w-8 h-8 border-2 border-indigo-200 border-t-indigo-400 rounded-full animate-spin mx-auto"></div>
+            <p class="mt-2 text-slate-600" id="scan-status-text">Running your scan…</p>
+          </div>
+          <div id="scan-error" class="mt-4 hidden text-center text-xs text-rose-700 bg-rose-50 border border-rose-200 rounded-xl px-4 py-3"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<footer class="border-t border-slate-200">
+  <div class="max-w-6xl mx-auto px-5 py-8 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-slate-600">
+    <span data-i18n="footer.left">© 2026 Add My Rank — nur offizielle Anmeldungen, niemals Spam-Links.</span>
+    <div class="flex items-center gap-4">
+      <span class="mono" data-i18n="footer.right">SiteBoost 300 · prüfen, boosten, gefunden werden</span>
+      <a href="https://vercel.com" target="_blank" rel="noopener" class="inline-flex items-center gap-2 whitespace-nowrap rounded-lg border border-slate-200 bg-white px-3 py-1.5 font-medium text-slate-700 transition hover:border-slate-300 hover:text-slate-900">
+        <svg viewBox="0 0 76 65" width="14" height="12" aria-hidden="true" fill="currentColor"><path d="M37.5274 0L75.0548 65H0L37.5274 0Z" /></svg>
+        <span>Powered by Vercel</span>
+      </a>
+    </div>
+  </div>
+</footer>
+
+<script src="/i18n.js"></script>
+
+<script>
+  // ---------------------------------------------------------------------------
+  // Engine fleet
+  // ---------------------------------------------------------------------------
+  const T = (key, vars) => (window.AMR ? window.AMR.t(key, vars) : key);
+
+  function countEngines() {
+    const tier1 = 3; // Google, Bing, DuckDuckGo — locked on
+    const checked = document.querySelectorAll('.eng:checked').length;
+    const total = tier1 + checked;
+    document.getElementById('engine-count-label').textContent = T('boost.selected', { n: total });
+    document.getElementById('sum-engines-label').textContent = T('boost.summary1', { n: total });
+    document.querySelectorAll('.eng').forEach((cb) => cb.closest('.engine-row').classList.toggle('on', cb.checked));
+    return total;
+  }
+
+  const MARKETS = {
+    RU: { flag: '🇷🇺', engine: 'Yandex' },
+    CN: { flag: '🇨🇳', engine: 'Baidu' },
+    KR: { flag: '🇰🇷', engine: 'Naver' },
+    CZ: { flag: '🇨🇿', engine: 'Seznam' },
+    JP: { flag: '🇯🇵', engine: 'Yahoo! Japan' },
+    TW: { flag: '🇹🇼', engine: 'Yahoo! Taiwan' },
+  };
+
+  function updateMarket() {
+    const note = document.getElementById('market-note');
+    const market = MARKETS[document.getElementById('sel-country').value];
+    if (market) {
+      note.textContent = market.flag + ' ' + T('boost.marketNote', { engine: market.engine });
+      note.classList.remove('hidden');
+    } else {
+      note.classList.add('hidden');
+    }
+  }
+
+  let pickedMedium = null;
+  function pickMedium(btn) {
+    pickedMedium = btn.dataset.medium;
+    document.querySelectorAll('.medium-btn').forEach((b) =>
+      b.classList.remove('ring-2', 'ring-indigo-400', 'bg-indigo-50', 'text-indigo-900'));
+    btn.classList.add('ring-2', 'ring-indigo-400', 'bg-indigo-50', 'text-indigo-900');
+  }
+
+  // ---------------------------------------------------------------------------
+  // Payment + scan
+  // ---------------------------------------------------------------------------
+  // Checkout is created server-side by /api/checkout. The $7 price, the order
+  // and the payment verification all live in the Stripe session, so nothing on
+  // this page can change what is charged or what gets scanned.
+  const $ = (id) => document.getElementById(id);
+
+  function setBusy(busy, text) {
+    $('pay-btn').disabled = busy;
+    $('scan-status').classList.toggle('hidden', !busy);
+    if (text) $('scan-status-text').textContent = text;
+  }
+
+  function showScanError(msg) {
+    setBusy(false);
+    $('scan-error').textContent = msg;
+    $('scan-error').classList.remove('hidden');
+  }
+
+  function gatherOrder() {
+    const engines = [...document.querySelectorAll('.eng:checked')]
+      .map((cb) => cb.dataset.engine)
+      .concat(['Google', 'Bing', 'DuckDuckGo']);
+    return {
+      url: $('inp-url').value.trim(),
+      email: $('inp-email').value.trim(),
+      country: $('sel-country').value,
+      language: $('sel-language').value,
+      medium: pickedMedium || 'web',
+      engines: engines.join(','),
+    };
+  }
+
+  async function postJson(path, payload) {
+    const res = await fetch(path, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json().catch(() => ({ ok: false, error: T('boost.errCheckout') }));
+    return { status: res.status, data };
+  }
+
+  async function runScan(payload, statusText) {
+    setBusy(true, statusText || T('boost.scanning'));
+    let result;
+    try {
+      result = await postJson('/api/scan', payload);
+    } catch (err) {
+      showScanError(T('boost.errScanNetwork'));
+      return;
+    }
+    if (!result.data.ok) {
+      showScanError(result.data.error || T('boost.errScan'));
+      return;
+    }
+    setBusy(true, T('boost.complete'));
+    // relative, so a localized boost page opens the localized report
+    window.location.href = 'report.html#t=' + encodeURIComponent(result.data.token);
+  }
+
+  /** Show an inline error and mark the offending field, instead of failing silently. */
+  function fieldError(id, msg) {
+    setBusy(false);
+    $('scan-error').textContent = msg;
+    $('scan-error').classList.remove('hidden');
+    const el = $(id);
+    if (!el) return;
+    el.classList.add('border-rose-400');
+    el.focus();
+    el.addEventListener('input', () => el.classList.remove('border-rose-400'), { once: true });
+  }
+
+  /** Accepts yoursite.com, https://yoursite.com, and localhost for testing. */
+  function looksLikeUrl(value) {
+    const v = String(value || '').trim();
+    if (!v) return false;
+    if (/^localhost(:\d+)?([/?#]|$)/i.test(v)) return true;
+    return /^(?:[a-z][a-z0-9+.-]*:\/\/)?(?:[^\s/?#@]+\.[^\s/?#@.]{2,})(?::\d+)?([/?#]|$)/i.test(v);
+  }
+
+  async function startCheckout() {
+    $('scan-error').classList.add('hidden');
+    const order = gatherOrder();
+    if (!order.url) return fieldError('inp-url', T('boost.errUrl'));
+    if (!looksLikeUrl(order.url)) return fieldError('inp-url', T('boost.errUrlShape'));
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(order.email)) {
+      return fieldError('inp-email', T('boost.errEmail'));
+    }
+
+    setBusy(true, T('boost.checkout'));
+    let result;
+    try {
+      result = await postJson('/api/checkout', order);
+    } catch (err) {
+      showScanError(T('boost.errNetwork'));
+      return;
+    }
+
+    // Local development without Stripe keys: keep the pipeline testable, unpaid.
+    if (result.status === 503 && result.data.devMode) {
+      runScan(order, T('boost.devMode'));
+      return;
+    }
+    if (!result.data.ok || !result.data.url) {
+      showScanError(result.data.error || T('boost.errCheckout'));
+      return;
+    }
+    window.location.href = result.data.url;
+  }
+  window.startCheckout = startCheckout;
+
+  /** Stripe sent the customer back — the server re-verifies the session, then scans. */
+  function resumeAfterPayment() {
+    const params = new URLSearchParams(location.search);
+    if (params.get('canceled')) {
+      showScanError(T('boost.canceled'));
+      return;
+    }
+    const sessionId = params.get('session_id');
+    if (!sessionId) return;
+    runScan({ sessionId }, T('boost.verify'));
+  }
+
+  // The landing-page scan hands the site over so nobody types it twice.
+  (function prefillFromQuery() {
+    try {
+      const params = new URLSearchParams(location.search);
+      const url = params.get('url');
+      if (url) $('inp-url').value = url;
+      if (params.get('country')) $('sel-country').value = params.get('country');
+    } catch (err) { /* no query string — nothing to prefill */ }
+  })();
+
+  countEngines();
+  updateMarket();
+  resumeAfterPayment();
+
+  // Language switches re-render the dynamic bits that are not plain data-i18n text.
+  document.addEventListener('amr:lang', () => { countEngines(); updateMarket(); });
+</script>
+</body>
+</html>

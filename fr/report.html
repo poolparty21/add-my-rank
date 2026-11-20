@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="fr" data-locale="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<title>Votre rapport de listing — Add My Rank</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Votre rapport d'explorabilité et de soumission Add My Rank.">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
+  body { font-family: 'Inter', system-ui, sans-serif; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+  .grid-bg { background-image: linear-gradient(rgba(99,102,241,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.07) 1px, transparent 1px); background-size: 44px 44px; }
+  .glass { background: rgba(255,255,255,0.85); backdrop-filter: blur(14px); }
+  .glow { box-shadow: 0 12px 40px rgba(79,70,229,0.14), 0 2px 10px rgba(168,85,247,0.10); }
+  .fade-in { animation: fin .4s ease both; }
+  @keyframes fin { from { opacity: 0; transform: translateY(10px);} to { opacity:1; transform:none;} }
+  details summary { list-style: none; cursor: pointer; }
+  details summary::-webkit-details-marker { display: none; }
+  details[open] .chev { transform: rotate(90deg); }
+  .chev { transition: transform .15s ease; }
+  #ring { transition: stroke-dashoffset 1.1s cubic-bezier(.22,.61,.36,1); }
+  .action-card.is-done { background: rgba(236,253,245,0.7); }
+  .action-card.is-done .action-title { text-decoration: line-through; text-decoration-thickness: 1.5px; color: #64748b; }
+  @media (prefers-reduced-motion: reduce) {
+    #ring { transition: none; }
+    .fade-in { animation: none; }
+  }
+  @media print {
+    nav, footer, .no-print { display: none !important; }
+    body { background: #ffffff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .glow { box-shadow: none !important; }
+    section, details { break-inside: avoid; }
+    details[open] summary .chev { display: none; }
+    #ring { transition: none; }
+    @page { margin: 14mm; }
+  }
+</style>
+</head>
+<body class="bg-[#f6f7ff] text-slate-700 antialiased min-h-screen flex flex-col" data-title-key="report.meta.title" data-desc-key="report.meta.description">
+
+<nav class="glass border-b border-slate-200 sticky top-0 z-40">
+  <div class="max-w-4xl mx-auto px-5 h-16 flex items-center justify-between">
+    <a href="/fr" class="flex items-center gap-2.5">
+      <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 to-fuchsia-600 grid place-items-center font-black text-white text-lg">▲</div>
+      <span class="font-extrabold text-lg tracking-tight text-slate-900">Add My <span class="text-indigo-600">Rank</span></span>
+    </a>
+          <div class="flex items-center gap-2 sm:gap-3">
+        <span class="mono text-[11px] text-slate-600 tracking-widest hidden sm:inline" data-i18n="report.nav">RAPPORT DE LISTING</span>
+        <button type="button" id="copy-summary" data-i18n="report.copySummary"
+          class="hidden no-print text-xs font-semibold border border-slate-300 hover:border-indigo-400 hover:text-slate-900 text-slate-700 rounded-lg px-3 py-1.5 transition">Copier le résumé</button>
+      <button type="button" id="print-btn" onclick="window.print()" data-i18n="report.savePdf"
+        class="hidden no-print text-xs font-semibold border border-slate-300 hover:border-indigo-400 hover:text-slate-900 text-slate-700 rounded-lg px-3 py-1.5 transition">Enregistrer en PDF</button>
+    </div>
+  </div>
+</nav>
+
+<!-- Loading / error states -->
+<div id="state" class="max-w-2xl mx-auto px-5 py-32 text-center">
+  <div id="loader" class="glass border border-slate-200 rounded-3xl p-10">
+    <div class="w-10 h-10 border-2 border-indigo-200 border-t-indigo-400 rounded-full animate-spin mx-auto"></div>
+    <p class="mt-5 font-bold text-slate-900" data-i18n="report.loading.title">Ouverture de votre rapport…</p>
+    <p class="mt-1 text-sm text-slate-600" data-i18n="report.loading.sub">Récupération des résultats signés.</p>
+  </div>
+  <div id="error" class="hidden glass border border-rose-200 rounded-3xl p-10">
+    <div class="text-4xl" aria-hidden="true">⚠️</div>
+    <p class="mt-4 font-bold text-slate-900 text-lg" id="error-msg" data-i18n="report.error.invalid">Ce lien de rapport n'est pas valide.</p>
+    <p class="mt-2 text-sm text-slate-600" data-i18n="report.error.hint">Les liens de rapport sont signés et infalsifiables. Si celui-ci a été tronqué, relancez un scan.</p>
+    <a href="/fr/boost" data-i18n="report.error.cta" class="inline-block mt-6 bg-gradient-to-r from-indigo-600 to-fuchsia-600 hover:opacity-90 text-white font-bold px-7 py-3.5 rounded-2xl">Lancer un nouveau scan — 7 $</a>
+  </div>
+</div>
+
+<!-- Report -->
+<main id="report" class="hidden">
+  <header class="grid-bg border-b border-slate-200">
+    <div class="max-w-4xl mx-auto px-5 py-14">
+      <div class="text-center fade-in">
+        <div class="inline-flex items-center gap-2 text-xs font-semibold mono text-emerald-700 border border-emerald-200 bg-emerald-50 rounded-full px-3.5 py-1.5 mb-6">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> <span data-i18n="report.badge">SCAN TERMINÉ ·</span> <span id="stamp"></span>
+        </div>
+        <div id="paid-chip" class="hidden mt-3">
+          <span class="inline-flex items-center gap-2 text-xs font-semibold mono text-emerald-700 border border-emerald-200 bg-emerald-50 rounded-full px-3.5 py-1.5">
+            <span data-i18n="report.paid">PAIEMENT VÉRIFIÉ · $</span><span id="paid-amount">7.00</span>
+          </span>
+        </div>
+        <h1 class="text-3xl md:text-5xl font-black tracking-tight text-slate-900" data-i18n="report.h1">Votre rapport de listing.</h1>
+        <p class="mt-3 text-slate-600 mono text-sm break-all" id="target-url"></p>
+      </div>
+
+      <!-- Score card -->
+      <div class="mt-12 glass border border-slate-200 rounded-3xl overflow-hidden glow fade-in">
+        <div class="px-7 py-8 grid md:grid-cols-[auto,1fr] gap-8 items-center">
+          <div class="text-center">
+            <div class="relative w-40 h-40 mx-auto">
+              <svg viewBox="0 0 120 120" class="w-40 h-40 -rotate-90" aria-hidden="true">
+                <defs>
+                  <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#4f46e5" /><stop offset="100%" stop-color="#db2777" />
+                  </linearGradient>
+                </defs>
+                <circle cx="60" cy="60" r="52" fill="none" stroke="#e2e8f0" stroke-width="10" />
+                <circle id="ring" cx="60" cy="60" r="52" fill="none" stroke="url(#ringGrad)" stroke-width="10"
+                  stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="326.7" />
+              </svg>
+              <div class="absolute inset-0 grid place-items-center">
+                <div class="text-5xl font-black mono bg-gradient-to-br from-indigo-600 to-fuchsia-600 bg-clip-text text-transparent" id="score">—</div>
+              </div>
+            </div>
+            <div class="mt-2 text-[11px] uppercase tracking-widest text-slate-600" data-i18n="report.score">Score</div>
+            <div class="mt-1 text-xs font-semibold text-slate-700" id="band">—</div>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+            <div><div class="text-2xl font-black text-slate-900 mono" id="grade">—</div><div class="text-[10px] uppercase tracking-wider text-slate-600 mt-1" data-i18n="report.grade">Note</div></div>
+            <div><div class="text-2xl font-black text-slate-900 mono" id="checks">—</div><div class="text-[10px] uppercase tracking-wider text-slate-600 mt-1" data-i18n="report.checks">Contrôles</div></div>
+            <div><div class="text-2xl font-black text-amber-600 mono" id="issues">—</div><div class="text-[10px] uppercase tracking-wider text-slate-600 mt-1" data-i18n="report.fixable">À corriger</div></div>
+            <div><div class="text-2xl font-black text-rose-600 mono" id="critical">—</div><div class="text-[10px] uppercase tracking-wider text-slate-600 mt-1" data-i18n="report.critical">Critiques</div></div>
+          </div>
+        </div>
+        <div id="bars" class="px-7 pb-8 space-y-3.5"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Top actions -->
+  <section class="max-w-4xl mx-auto px-5 py-16">
+    <h2 class="text-2xl font-black text-slate-900" data-i18n="report.actions.title">Corrigez ceci en premier</h2>
+    <p class="text-slate-600 mt-1.5 text-sm" data-i18n="report.actions.sub">Classé par impact. Chaque point est réalisable dès aujourd'hui.</p>
+    <div id="effort-chips" class="mt-4 flex flex-wrap gap-2"></div>
+    <div id="progress-wrap" class="mt-5 hidden">
+      <div class="flex items-center justify-between text-xs mb-1.5">
+        <span id="progress-label" class="text-slate-700 font-semibold"></span>
+        <button type="button" id="progress-reset" data-i18n="report.progress.reset" class="no-print text-slate-600 hover:text-slate-900 underline underline-offset-2">Réinitialiser</button>
+      </div>
+      <div class="h-2 rounded-full bg-slate-100"><div id="progress-bar" class="h-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400" style="width:0%"></div></div>
+    </div>
+    <div id="actions" class="mt-6 space-y-3"></div>
+  </section>
+
+  <!-- Engine fleet -->
+  <section class="max-w-4xl mx-auto px-5 pb-16">
+    <h2 class="text-2xl font-black text-slate-900" data-i18n="report.fleet.title">Vos moteurs</h2>
+    <p class="text-slate-600 mt-1.5 text-sm" id="engine-intro" data-i18n="report.fleet.sub">Soumissions en file pour votre site.</p>
+    <div id="engines" class="mt-6 flex flex-wrap gap-2"></div>
+    <div id="engine-notes" class="mt-5 space-y-2"></div>
+  </section>
+
+  <!-- Full checks -->
+  <section class="max-w-4xl mx-auto px-5 pb-16">
+    <h2 class="text-2xl font-black text-slate-900" data-i18n="report.all.title">Tous les contrôles</h2>
+    <p class="text-slate-600 mt-1.5 text-sm" data-i18n="report.all.sub">L'audit d'explorabilité complet, rien de caché.</p>
+    <div id="checks-list" class="mt-6 space-y-2"></div>
+  </section>
+
+  <!-- Upsell -->
+  <section class="no-print max-w-4xl mx-auto px-5 pb-20">
+    <div class="glass border border-fuchsia-200 rounded-3xl p-8 text-center relative overflow-hidden">
+      <div class="absolute -top-24 left-1/2 -translate-x-1/2 w-72 h-72 bg-fuchsia-300/25 blur-[90px] rounded-full pointer-events-none"></div>
+      <div class="relative">
+        <h2 class="text-2xl font-black text-slate-900" data-i18n="report.upsell.title">Vous ne voulez pas le faire vous-même ?</h2>
+        <p class="text-slate-600 mt-2 text-sm max-w-lg mx-auto" data-i18n="report.upsell.p">Envoyez-nous ce rapport et nous appliquons les corrections — schema, balises meta, sitemaps et profils automatiquement, des spécialistes pour le reste. Puis nous rescannons pour le prouver.</p>
+        <a href="/fr/boost#fix" data-i18n="report.upsell.cta" class="inline-block mt-6 bg-gradient-to-r from-indigo-600 to-fuchsia-600 hover:opacity-90 text-white font-bold px-8 py-4 rounded-2xl">Obtenir le pack de corrections</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- Site footer: outside #report so it shows in the loader and error states too. -->
+<footer class="no-print mt-auto border-t border-slate-200">
+  <div class="max-w-4xl mx-auto px-5 py-8 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-slate-600">
+    <span data-i18n="footer.left">© 2026 Add My Rank — soumissions officielles uniquement, jamais de liens spam.</span>
+    <div class="flex items-center gap-4">
+      <span class="mono">SiteBoost 300</span>
+      <a href="https://vercel.com" target="_blank" rel="noopener" class="inline-flex items-center gap-2 whitespace-nowrap rounded-lg border border-slate-200 bg-white px-3 py-1.5 font-medium text-slate-700 transition hover:border-slate-300 hover:text-slate-900">
+        <svg viewBox="0 0 76 65" width="14" height="12" aria-hidden="true" fill="currentColor"><path d="M37.5274 0L75.0548 65H0L37.5274 0Z" /></svg>
+        <span>Powered by Vercel</span>
+      </a>
+    </div>
+  </div>
+</footer>
+
+<script src="/i18n.js"></script>
+
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  const T = (k, v) => (window.AMR ? window.AMR.t(k, v) : k);
+
+  const SEV = {
+    critical: { label: 'CRITICAL', cls: 'bg-rose-50 text-rose-700 border-rose-200' },
+    high: { label: 'HIGH', cls: 'bg-orange-50 text-orange-700 border-orange-200' },
+    medium: { label: 'MED', cls: 'bg-amber-50 text-amber-700 border-amber-200' },
+    low: { label: 'LOW', cls: 'bg-sky-50 text-sky-700 border-sky-200' },
+    pass: { label: 'PASS', cls: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+  };
+  const CATEGORY = {
+    indexability: 'Indexability', onpage: 'On-page', technical: 'Technical',
+    mobile: 'Mobile', performance: 'Speed',
+  };
+  const barColor = (s) => (s >= 80 ? 'from-emerald-500 to-emerald-400' : s >= 60 ? 'from-amber-500 to-amber-400' : 'from-rose-500 to-rose-400');
+  const RING_LEN = 2 * Math.PI * 52;
+  const reduced = () => Boolean(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+
+  /** Count the score up instead of snapping it in; instant when motion is reduced. */
+  function countUp(el, target, ms = 900) {
+    // requestAnimationFrame never fires in a background tab: show the real value.
+    if (reduced() || document.hidden) { el.textContent = String(target); return; }
+    const start = performance.now();
+    const step = (now) => {
+      const p = Math.min(1, (now - start) / ms);
+      el.textContent = String(Math.round(target * (1 - Math.pow(1 - p, 3))));
+      if (p < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+
+  /** Clipboard with a fallback for non-secure contexts; always restores the label. */
+  async function copyText(text, btn, doneLabel) {
+    const label = btn.getAttribute('data-label') || btn.textContent;
+    btn.setAttribute('data-label', label);
+
+    const legacyCopy = () => {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      let ok = false;
+      try { ok = document.execCommand('copy'); } catch (_) { ok = false; }
+      ta.remove();
+      return ok;
+    };
+
+    let ok = false;
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        // A permission prompt can leave this promise pending; do not block on it.
+        await Promise.race([
+          navigator.clipboard.writeText(text),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('clipboard-timeout')), 1200)),
+        ]);
+        ok = true;
+      }
+    } catch (_) { ok = false; }
+    if (!ok) ok = legacyCopy();
+
+    if (!ok) { btn.textContent = label; return; }
+    btn.textContent = doneLabel;
+    setTimeout(() => { btn.textContent = btn.getAttribute('data-label'); }, 1500);
+  }
+
+  // Ticks belong to the site, not to one scan: every rescan mints a new report
+  // id, so keying on it lost the checklist on the customer's second report.
+  // Key on the host, www. stripped and protocol ignored, so https://example.com and
+  // https://www.example.com share one checklist for the same site.
+  const siteKey = (origin) => {
+    let host = String(origin || 'unknown').trim().toLowerCase();
+    try { host = new URL(host.includes('://') ? host : 'https://' + host).hostname; } catch (_) { /* keep raw */ }
+    host = String(host || 'unknown').replace(/^www\./, '');
+    return 'amr.done.site.' + (host || 'unknown');
+  };
+  const legacyKey = (id) => 'amr.done.' + (id || 'report');
+
+  function parseDone(raw) {
+    if (raw === null) return null;
+    try {
+      const value = JSON.parse(raw);
+      return Array.isArray(value) ? new Set(value) : null;
+    } catch (_) { return null; }
+  }
+  function readItem(key) {
+    try { return parseDone(localStorage.getItem(key)); } catch (_) { return null; }
+  }
+  function writeItem(key, set) {
+    try { localStorage.setItem(key, JSON.stringify([...set])); return true; } catch (_) { return false; }
+  }
+
+  /**
+   * Site state wins; a pre-origin report key is migrated once, then dropped.
+   * An empty array is state too: it is how Reset blocks old ticks from
+   * migrating back in on the next visit.
+   */
+  function readDone(origin, reportId) {
+    const current = readItem(siteKey(origin));
+    if (current) return current;
+    const legacy = readItem(legacyKey(reportId));
+    if (legacy) {
+      // Drop the old key only once the site key really holds the ticks; a
+      // blocked/full localStorage must not lose them.
+      if (writeItem(siteKey(origin), legacy)) {
+        try { localStorage.removeItem(legacyKey(reportId)); } catch (_) { /* ignore */ }
+      }
+      return legacy;
+    }
+    return new Set();
+  }
+  function writeDone(origin, set) {
+    writeItem(siteKey(origin), set);
+  }
+
+  function showError(msg) {
+    $('state').classList.remove('hidden');
+    $('loader').classList.add('hidden');
+    $('error').classList.remove('hidden');
+    $('error-msg').textContent = msg;
+  }
+
+  // Report-scoped state the language listener needs after render() has run.
+  let lastReport = null;
+
+  /** Effort triage: how much of this is a coffee break vs a week. */
+  function paintEffortChips(r) {
+    const minutes = (f) => { const m = String(f.effort || '').match(/(\d+)/); return m ? Number(m[1]) : 999; };
+    const buckets = [
+      { key: 'report.effort.quick', items: r.actions.filter((f) => minutes(f) <= 10) },
+      { key: 'report.effort.mid', items: r.actions.filter((f) => minutes(f) > 10 && minutes(f) <= 30) },
+      { key: 'report.effort.long', items: r.actions.filter((f) => minutes(f) > 30) },
+    ].filter((b) => b.items.length);
+    $('effort-chips').innerHTML = buckets.map((b) =>
+      `<span class="text-[11px] font-semibold mono px-2.5 py-1 rounded-lg border border-slate-200 bg-white text-slate-700">${esc(T(b.key))} · ${b.items.length}</span>`).join('');
+  }
+
+  /**
+   * Recounts from the live DOM and re-translates, so a toggle, a re-render or a
+   * language switch cannot leave the label showing a stale count or wording.
+   */
+  function syncProgress() {
+    const wrap = $('progress-wrap');
+    if (!wrap) return;
+    const boxes = [...document.querySelectorAll('#actions .done-box')];
+    const total = boxes.length;
+    const done = boxes.filter((b) => b.checked).length;
+    wrap.classList.toggle('hidden', total === 0);
+    $('progress-label').textContent = T('report.progress', { done, total });
+    $('progress-bar').style.width = total ? (100 * done / total) + '%' : '0%';
+    $('progress-reset').textContent = T('report.progress.reset');
+  }
+
+  document.addEventListener('amr:lang', () => {
+    syncProgress();
+    if (lastReport) paintEffortChips(lastReport);
+  });
+
+  function render(r) {
+    $('state').classList.add('hidden');
+    $('report').classList.remove('hidden');
+    $('print-btn').classList.remove('hidden');
+
+    $('stamp').textContent = new Date(r.scannedAt).toLocaleString();
+    if (r.payment && r.payment.verified) {
+      $('paid-chip').classList.remove('hidden');
+      $('paid-amount').textContent = ((Number(r.payment.amount) || 700) / 100).toFixed(2);
+    }
+    $('target-url').textContent = r.target.submitted + (r.target.url !== r.target.submitted ? '  →  ' + r.target.url : '') + '  ·  HTTP ' + r.target.httpStatus;
+    $('score').textContent = r.score;
+    $('grade').textContent = r.grade;
+    $('checks').textContent = r.summary.checks;
+    $('issues').textContent = r.summary.issues;
+    $('critical').textContent = r.summary.critical;
+
+    $('bars').innerHTML = Object.entries(r.categories).map(([key, c]) => `
+      <div>
+        <div class="flex justify-between text-xs mb-1.5">
+          <span class="text-slate-700 font-medium">${esc(T('cat.' + key))}${c.issues ? ` <span class="text-slate-600">· ${esc(T(c.issues === 1 ? 'report.issueOne' : 'report.issueMany', { n: c.issues }))}</span>` : ''}</span>
+          <span class="mono text-slate-600">${c.score}</span>
+        </div>
+        <div class="h-2 rounded-full bg-slate-100"><div class="h-full rounded-full bg-gradient-to-r ${barColor(c.score)}" style="width:${c.score}%"></div></div>
+      </div>`).join('');
+
+    const card = (f, i, trackable) => {
+      const s = SEV[f.severity] || SEV.low;
+      const actionable = f.severity !== 'pass';
+      return `
+      <details class="action-card glass border border-slate-200 rounded-2xl group">
+        <summary class="px-5 py-4 flex items-start gap-3">
+          ${trackable && actionable ? `<input type="checkbox" class="done-box no-print h-4 w-4 shrink-0 mt-1 rounded border-slate-300" data-done="${esc(f.id)}" aria-label="${esc(T('report.done.aria'))}">` : ''}
+          <span class="mono text-[11px] ${s.cls} border rounded px-2 py-1 shrink-0 mt-0.5">${esc(T('sev.' + f.severity))}</span>
+          <span class="flex-1 min-w-0">
+            <span class="block font-semibold text-slate-900 text-sm action-title">${esc(f.title)}</span>
+            <span class="block text-xs text-slate-600 mt-1">${esc(T('cat.' + f.category))} · ~${esc(f.effort)}</span>
+          </span>
+          <span class="text-slate-600 text-lg leading-none chev" aria-hidden="true">›</span>
+        </summary>
+        <div class="px-5 pb-5 pl-16 text-sm text-slate-600 leading-relaxed space-y-2">
+          <p>${esc(f.detail)}</p>
+          ${actionable ? `<p class="text-slate-700"><span class="text-indigo-600 font-semibold">${esc(T('report.fix'))}</span> ${esc(f.fix)}</p>
+          <button type="button" class="no-print copy-fix text-[11px] font-semibold text-indigo-700 border border-indigo-200 bg-indigo-50 hover:bg-indigo-100 rounded px-2.5 py-1 transition" data-copy="${esc(f.title + '\n' + (f.fix || '') + '\n' + f.detail)}">${esc(T('report.copy'))}</button>` : ''}
+        </div>
+      </details>`;
+    };
+
+    $('actions').innerHTML = r.actions.length
+      ? r.actions.map((f, i) => card(f, i, true)).join('')
+      : '<div class="glass border border-emerald-200 rounded-2xl px-5 py-6 text-emerald-700 text-sm font-semibold">' + esc(T('report.none')) + '</div>';
+
+    $('checks-list').innerHTML = r.checks.map((f, i) => card(f, i, false)).join('');
+
+    renderExtras(r);
+
+    if (r.engineFleet && r.engineFleet.length) {
+      $('engines').innerHTML = r.engineFleet.map((e) => {
+        const primary = e === r.enginePrimary;
+        return `<span class="text-xs font-semibold mono px-3 py-1.5 rounded-xl border ${primary ? 'border-indigo-400 bg-indigo-100 text-indigo-700' : 'border-slate-200 bg-slate-100 text-slate-700'}">${primary ? '★ ' : ''}${esc(e)}</span>`;
+      }).join('');
+      $('engine-notes').innerHTML = (r.engineNotes || [])
+        .map((n) => `<div class="text-xs text-slate-600 flex items-start gap-2"><span class="text-indigo-600">→</span><span>${esc(n)}</span></div>`)
+        .join('');
+    } else {
+      $('engine-intro').textContent = T('report.fleet.fallback');
+    }
+
+    // i18n.js asks this function for the title, so a later apply() can never
+    // replace the specific title with the generic page one.
+    var title = function () { return T('report.docTitle', { g: r.grade, s: r.score, o: r.target.origin }); };
+    if (window.AMR) window.AMR.pageTitle = title;
+    document.title = title();
+  }
+
+  /** Ring, band, effort triage, done-tracking and clipboard extras. */
+  function renderExtras(r) {
+    const score = Math.max(0, Math.min(100, Number(r.score) || 0));
+    // The ring animates off the CSS transition; set the end state directly so it
+    // still renders if no animation frame ever runs (background tab).
+    $('ring').style.strokeDashoffset = String(RING_LEN * (1 - score / 100));
+    countUp($('score'), score);
+    $('band').textContent = T(score >= 80 ? 'report.band.strong' : score >= 60 ? 'report.band.ok' : 'report.band.weak');
+
+    lastReport = r;
+    paintEffortChips(r);
+
+    // Done-tracking lives on this device only, keyed by the target origin.
+    const origin = r.target.origin;
+    const doneSet = readDone(origin, r.id);
+    const boxes = [...document.querySelectorAll('#actions .done-box')];
+
+    boxes.forEach((box) => {
+      const id = box.getAttribute('data-done');
+      const card = box.closest('.action-card');
+      box.checked = doneSet.has(id);
+      if (card) card.classList.toggle('is-done', box.checked);
+
+      // The box sits inside <summary>: let the browser toggle it, but keep the
+      // click from reaching the summary, which would also fold the card open.
+      box.addEventListener('click', (event) => { event.stopPropagation(); });
+      box.addEventListener('change', () => {
+        if (box.checked) doneSet.add(id); else doneSet.delete(id);
+        writeDone(origin, doneSet);
+        if (card) card.classList.toggle('is-done', box.checked);
+        syncProgress();
+      });
+    });
+    syncProgress();
+
+    $('progress-reset').onclick = () => {
+      doneSet.clear();
+      writeDone(origin, doneSet);
+      boxes.forEach((box) => {
+        box.checked = false;
+        const card = box.closest('.action-card');
+        if (card) card.classList.remove('is-done');
+      });
+      syncProgress();
+    };
+
+    $('copy-summary').classList.remove('hidden');
+    $('copy-summary').onclick = (event) => {
+      const top = r.actions.slice(0, 5)
+        .map((f, i) => `${i + 1}. ${f.title} — ~${f.effort} (${f.severity})`)
+        .join('\n');
+      const text = `${r.target.origin} — ${score}/100 (${r.grade}), ${r.summary.checks} checks\n`
+        + (top ? `\n${top}\n` : '')
+        + `\n${location.href}`;
+      copyText(text, event.currentTarget, T('report.copied'));
+    };
+  }
+
+  // One delegated handler: only the action cards carry a copy button.
+  document.getElementById('actions').addEventListener('click', (event) => {
+    const btn = event.target.closest('.copy-fix');
+    if (!btn) return;
+    event.preventDefault();
+    event.stopPropagation();
+    copyText(btn.getAttribute('data-copy') || '', btn, T('report.copied'));
+  });
+
+  async function load() {
+    let token = '';
+    try { token = new URLSearchParams(location.search).get('t') || ''; } catch (_) {}
+    if (!token && location.hash.startsWith('#t=')) token = location.hash.slice(3);
+    if (!token) return showError(T('report.errNoToken'));
+
+    try {
+      const res = await fetch('/api/report?t=' + encodeURIComponent(token), { headers: { accept: 'application/json' } });
+      const data = await res.json();
+      if (!data.ok) return showError(data.error || T('report.error.invalid'));
+      render(data.report);
+    } catch (err) {
+      showError(T('report.errLoad'));
+    }
+  }
+
+  load();
+})();
+</script>
+</body>
+</html>

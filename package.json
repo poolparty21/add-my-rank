@@ -1,0 +1,16 @@
+{
+  "name": "add-my-rank",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Add My Rank / SiteBoost 300 — static landing and boost flow plus a signed-report crawlability scanner.",
+  "type": "commonjs",
+  "scripts": {
+    "dev": "node dev-server.js",
+    "start": "node dev-server.js",
+    "build:locales": "node build-locales.js",
+    "check:locales": "node build-locales.js --check"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

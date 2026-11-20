@@ -1,0 +1,1105 @@
+/**
+ * Add My Rank — translations and language routing.
+ *
+ * Detection order: ?lang=… → saved choice → system language (de/pl/fr) → English.
+ * That means a German, Polish or French visitor lands in their language without
+ * clicking anything; their choice is remembered afterwards.
+ *
+ * Usage in markup:
+ *   <h2 data-i18n="how.title"></h2>          textContent
+ *   <p data-i18n-html="hero.p"></p>          innerHTML (for <strong> in copy)
+ *   <input data-i18n-placeholder="hero.placeholder">
+ *   <button data-i18n="panel.cta"></button>
+ * In scripts: AMR.t('panel.found', { n: 7 })
+ */
+(function () {
+  'use strict';
+
+  var SUPPORTED = ['en', 'de', 'pl', 'fr'];
+  var STORE_KEY = 'amr.lang';
+
+  var DICT = {
+    en: {
+      'meta.title': 'Add My Rank — find out why nobody finds your site',
+      'meta.description': 'A real crawlability screening of your site: score, grade and the fixes that matter. Full boost submits you to 14 search engines.',
+
+      'nav.how': 'How it works',
+      'nav.sample': 'Sample report',
+      'nav.engines': 'Engines',
+      'nav.pricing': 'Pricing',
+      'nav.faq': 'FAQ',
+      'nav.cta': 'Free screening',
+
+      'hero.badge': 'SITEBOOST 300 · 14 ENGINES · FREE SCREENING',
+      'hero.title1': 'Find out why your site',
+      'hero.title2': 'nobody finds.',
+      'hero.p': 'We run <strong>17 real checks</strong> on your site and show you the score, the grade and every fix ranked by impact — in plain English, no jargon. The full boost then submits you to <strong>14 search engines</strong>.',
+      'hero.placeholder': 'https://yourbusiness.com',
+      'hero.button': 'Screen my site →',
+      'hero.note': 'Free screening — no account, no email. Real crawl, real score.',
+      'hero.secondary': 'What the full check includes →',
+      'hero.trust1': 'No account needed',
+      'hero.trust2': 'Every check explained',
+      'hero.trust3': 'Results in seconds',
+
+      'panel.ready': 'READY · WAITING FOR A URL',
+      'panel.idle.title': 'The bot fleet is idle.',
+      'panel.idle.sub': '14 ENGINES · 17 CHECKS · ~10 SECONDS',
+      'panel.stat.engines': 'Engines',
+      'panel.stat.checks': 'Checks',
+      'panel.stat.crawl': 'Crawl',
+      'panel.crawling': 'CRAWLING · 17 CHECKS',
+      'panel.caption': 'OFFICIAL CHANNELS ONLY · NO FORCED INDEXING',
+      'panel.complete': 'CRAWL COMPLETE · HTTP {status}',
+      'panel.scoreLabel': 'Score',
+      'panel.kicker': 'CONGRATULATIONS',
+      'panel.kickerClean': 'CLEAN BILL OF HEALTH',
+      'panel.found': 'We found {n} step to optimize',
+      'panel.foundPlural': 'We found {n} steps to optimize',
+      'panel.clean': 'Nothing blocking. Optional polish only.',
+      'panel.checks': '{n} checks run · {c} critical',
+      'panel.grade': 'GRADE {g}',
+      'panel.cta': 'See what we would fix first',
+      'panel.again': 'Screen another',
+      'panel.note': 'That is the free screening. The full boost runs all 17 checks with effort estimates, submits your site to 14 engines — and we do that work for you after checkout.',
+      'panel.noIssues': 'No issues found — nice work.',
+      'panel.crawlComplete': 'crawl complete',
+      'panel.step1': 'resolving DNS',
+      'panel.step2': 'fetching homepage',
+      'panel.step3': 'following redirects',
+      'panel.step4': 'reading robots.txt',
+      'panel.step5': 'looking for sitemap.xml',
+      'panel.step6': 'parsing <head>',
+      'panel.step7': 'checking HTTPS and mixed content',
+      'panel.step8': 'measuring image weight',
+      'panel.step9': 'scoring 5 categories',
+      'panel.step10': 'queueing 14 engines',
+
+      'err.urlRequired': 'Add your website address to scan it.',
+      'err.urlInvalid': 'That does not look like a web address. Try yourbusiness.com.',
+      'err.network': 'Could not reach the scanner. Check your connection and try again.',
+      'err.generic': 'That scan did not finish. Try another address.',
+
+      'sample.badge': 'REAL OUTPUT · THIS IS WHAT THE FULL CHECK GIVES YOU',
+      'sample.title': 'This is the actual report.',
+      'sample.p': 'Not a mockup. This is genuine output from our scanner, run against example.com. Click any check to see what it found and how to fix it.',
+      'sample.score': 'Score',
+      'sample.grade': 'Grade',
+      'sample.checks': 'Checks run',
+      'sample.fixable': 'Fixable',
+      'sample.critical': 'Critical',
+      'sample.breakdown': 'Breakdown by category',
+      'sample.every': 'Every check we run — expand any row',
+      'sample.footnote': 'Scanned live against example.com. Your report is generated the same way, for your site, in under a minute.',
+
+      'sev.critical': 'CRITICAL',
+      'sev.high': 'HIGH',
+      'sev.medium': 'MED',
+      'sev.low': 'LOW',
+      'sev.pass': 'PASS',
+      'cat.indexability': 'Indexability',
+      'cat.onpage': 'On-page',
+      'cat.technical': 'Technical',
+      'cat.mobile': 'Mobile',
+      'cat.performance': 'Speed',
+
+      'how.title': 'Three steps. About a minute.',
+      'how.sub': 'No account, no setup, no waiting on a sales call.',
+      'how.s1.title': 'Screen your site',
+      'how.s1.p': 'Add your URL. We crawl it live and show the score, the grade and what is blocking the crawlers — free, no email needed.',
+      'how.s2.title': 'See the fixes',
+      'how.s2.p': 'HTTPS, robots.txt, sitemap, title, meta, canonicals, language, social tags, charset, mobile viewport and image weight — each scored and explained in plain language.',
+      'how.s3.title': 'We do the work',
+      'how.s3.p': 'After checkout we run the full check and submit you to 14 search engines, then send the listing report with your fixes ranked by impact.',
+
+      'engines.title': 'The 14 engines.',
+      'engines.sub': 'Not just the big three. If your customers search in German, Polish, Russian, Czech or Chinese, you want to be in the engines they actually use.',
+      'engines.tier1.label': 'Tier 1 — everyone gets these',
+      'engines.tier1.p': 'Official submission via Search Console and Bing Webmaster Tools, plus sitemap ping where supported.',
+      'engines.tier2.label': 'Tier 2 — regional giants',
+      'engines.tier2.p': 'Russia, China, Korea. Over a billion searches a day happen outside Google. Submitted via official webmaster channels.',
+      'engines.tier2b.label': 'Tier 2 — local champions',
+      'engines.tier2b.p': 'Czechia, Japan, Taiwan — markets where the local engine beats Google outright.',
+      'engines.tier2c.label': 'Tier 2 — independent',
+      'engines.tier2c.p': 'Independent, privacy-first crawlers. They send real referral traffic and almost nobody competes for placement there.',
+      'engines.tier3.label': 'Tier 3 — the long tail',
+      'engines.tier3.p': 'Independent crawlers and privacy engines. Smaller reach, zero competition for attention, and real crawl traffic back to your site.',
+      'engines.included': 'included',
+      'engines.matched': 'country/language matched',
+      'engines.straight': '<span class="text-amber-700 font-bold">Straight talk:</span> no one can force an engine to index you — and we will never claim otherwise. What we do is everything legitimate that puts you in front of every crawler: official submissions, IndexNow pings, a clean sitemap and a crawlability check so nothing quietly blocks you. The engines then crawl on their own schedule.',
+
+      'pricing.boost.label': 'SiteBoost 300 — The Boost',
+      'pricing.oneTime': 'one-time · all-inclusive',
+      'pricing.b1': '<strong>17-point crawlability audit</strong> with a score, grade and ranked fixes',
+      'pricing.b2': '<strong>Every finding explained</strong> in plain English, with the exact fix',
+      'pricing.b3': 'Submission to 14 engines, matched to your market',
+      'pricing.b4': 'IndexNow pings to every engine that supports them',
+      'pricing.cta': 'Get the full boost — $7',
+      'pricing.next.label': 'After your boost',
+      'pricing.next.title': 'Fix packs',
+      'pricing.next.p': 'If the screening finds problems, fix them yourself with the report — or buy the fix. Software handles schema, meta and sitemaps; specialists handle the rest.',
+      'pricing.p1': 'One-click fix packs from your report',
+      'pricing.p2': 'Automated: sitemap, meta, robots fixes',
+      'pricing.p3': 'Specialist handled: content, listings',
+      'pricing.p4': 'Re-boost included to verify the fix',
+      'pricing.next.foot': 'from $97 · priced per pack after your scan',
+
+      'faq.title': 'Straight answers.',
+      'faq.q1': 'What do I actually get?',
+      'faq.a1': 'A full report you can open immediately: a score out of 100, a letter grade, a breakdown across five categories (indexability, on-page, technical, mobile, speed), and every one of the 17 checks with what it found and exactly how to fix it. On top of that we submit your site to 14 search engines.',
+      'faq.q2': 'I am not technical. Will I understand it?',
+      'faq.a2': 'That is who it is built for. Every finding says what it is, why it matters and what to do. If a fix is genuinely beyond you, hand the report back and we apply it.',
+      'faq.q3': 'Will I be #1 on Google tomorrow?',
+      'faq.a3': 'No — and run from anyone who says otherwise. You get your site submitted to 14 engines, pinged via IndexNow, and every technical problem blocking crawlers identified and explained. Ranking depends on content and competition, but you cannot rank at all if you are not crawlable.',
+      'faq.q4': 'What exactly do you submit to?',
+      'faq.a4': 'Official channels only: Google Search Console, Bing Webmaster Tools (which also feeds DuckDuckGo and Yahoo), Baidu Zhanzhang, Yandex Webmaster, Naver Search Advisor, Seznam Webmaster, plus IndexNow pings and tier-3 engines matched to your country and language.',
+      'faq.q5': 'Do you build spammy backlinks?',
+      'faq.a5': 'No — never. Scaled link schemes violate Google spam policies and can get your site penalised. Your boost is submissions, pings and crawlability: the clean work that helps and cannot hurt.',
+
+      'cta.title': 'Ready to be found?',
+      'cta.p': 'Screen your site free. See the fixes. Decide afterwards.',
+      'cta.button': 'Screen my site free',
+      'cta.secondary': 'See the full boost',
+
+      'footer.left': '© 2026 Add My Rank — official submissions only, no spam links, ever.',
+      'footer.right': 'SiteBoost 300 · screen, boost, get found',
+
+      'lang.label': 'Language',
+
+      'boost.meta.title': 'Boost my rank — Add My Rank · SiteBoost 300',
+      'boost.meta.description': 'Submit your site to 14 search engines and get the full 17-check listing report.',
+      'boost.marketNote': '{engine} moves to the front of the queue — it is the primary engine for your market.',
+      'boost.step': 'SITEBOOST 300 · STEP 1 OF 2',
+      'boost.questions': 'Questions?',
+      'boost.badge': '$7 · ONE PAYMENT · NO SUBSCRIPTION',
+      'boost.title': 'Boost my rank.',
+      'boost.sub': 'Tell us where to find you. We submit your site to every engine your market needs — officially — and verify nothing blocks the crawlers.',
+      'boost.urlLabel': 'Your website *',
+      'boost.emailLabel': 'Email for your report *',
+      'boost.urlPlaceholder': 'https://yourbusiness.com',
+      'boost.emailPlaceholder': 'you@yourbusiness.com',
+      'boost.country': 'Country',
+      'boost.language': 'Language',
+      'boost.medium': 'Customers find you via',
+      'boost.mediumWeb': '🌐 Web search',
+      'boost.mediumPhone': '📞 Phone & local',
+      'boost.mediumNote': 'Phone & local adds local-listings checks (maps, directories, business profiles) to your report.',
+      'boost.fleet': 'Your engine fleet',
+      'boost.selected': '{n}/14 selected',
+      'boost.summaryOneTime': 'one-time',
+      'boost.summary1': '{n} engine submissions, official channels',
+      'boost.summary2': 'IndexNow ping to all supporting engines',
+      'boost.summary3': 'Crawlability check: robots, sitemap, meta',
+      'boost.summary4': 'Listing report to your email in minutes',
+      'boost.total': 'Total due today',
+      'boost.pay': 'Pay $7 & start my boost →',
+      'boost.payNote': 'Secure card payment via Stripe. Your scan runs the moment payment clears.',
+      'boost.checkout': 'Opening secure Stripe checkout…',
+      'boost.verify': 'Payment received — verifying it and scanning your site…',
+      'boost.scanning': 'Contacting your site…',
+      'boost.complete': 'Scan complete — opening your report…',
+      'boost.devMode': 'Stripe is not configured locally — running the scan without payment…',
+      'boost.canceled': 'Checkout was cancelled — nothing was charged. Your details are still in the form.',
+      'boost.errUrl': 'Enter your website address so we know what to scan.',
+      'boost.errUrlShape': 'That does not look like a web address. Try yourbusiness.com.',
+      'boost.errEmail': 'Enter the email address where we should send your report.',
+      'boost.errNetwork': 'We could not reach our payment provider. Please check your connection and try again.',
+      'boost.errCheckout': 'Checkout could not be started. Please try again.',
+      'boost.errScanNetwork': 'We could not reach our scanner. Please check your connection and try again.',
+      'boost.errScan': 'The scan failed. Please check the website address and try again.',
+
+      'report.meta.title': 'Your listing report — Add My Rank',
+      'report.meta.description': 'Your Add My Rank crawlability and submission report.',
+      'report.nav': 'LISTING REPORT',
+      'report.savePdf': 'Save PDF',
+      'report.loading.title': 'Opening your report…',
+      'report.loading.sub': 'Fetching the signed results.',
+      'report.error.invalid': 'This report link is not valid.',
+      'report.error.hint': 'Report links are signed and tamper-proof. If this one was cut off, run a fresh scan.',
+      'report.error.cta': 'Run a new scan — $7',
+      'report.badge': 'SCAN COMPLETE ·',
+      'report.paid': 'PAYMENT VERIFIED · $',
+      'report.h1': 'Your listing report.',
+      'report.score': 'Score',
+      'report.grade': 'Grade',
+      'report.checks': 'Checks run',
+      'report.fixable': 'Fixable',
+      'report.critical': 'Critical',
+      'report.actions.title': 'Fix these first',
+      'report.actions.sub': 'Ranked by impact. Each one is something you can actually change today.',
+      'report.fleet.title': 'Your engine fleet',
+      'report.fleet.sub': 'Submissions queued for your site.',
+      'report.fleet.fallback': 'Engine fleet recorded with this scan.',
+      'report.all.title': 'Every check',
+      'report.all.sub': 'The full crawlability audit, nothing hidden.',
+      'report.upsell.title': "Don't want to do these yourself?",
+      'report.upsell.p': "Send us this report and we'll apply the fixes — schema, meta tags, sitemaps and profiles automatically, specialists for the rest. Then we re-scan to prove it worked.",
+      'report.upsell.cta': 'Get the fix pack',
+      'report.fix': 'Fix:',
+      'report.issueOne': '{n} issue',
+      'report.issueMany': '{n} issues',
+      'report.none': 'Nothing critical — your site is in good shape. Optional polish below.',
+      'report.errNoToken': 'No report token was supplied.',
+      'report.errLoad': 'Could not load the report. Check your connection and reload.',
+      'report.band.strong': 'Strong — fix the rest and ship it',
+      'report.band.ok': 'Decent — a few fixes will lift this',
+      'report.band.weak': 'Fix these first',
+      'report.effort.quick': 'Under 10 min',
+      'report.effort.mid': '10–30 min',
+      'report.effort.long': 'Longer',
+      'report.done.aria': 'Mark as done',
+      'report.progress': '{done} of {total} done',
+      'report.progress.reset': 'Reset',
+      'report.copy': 'Copy fix',
+      'report.copied': 'Copied',
+      'report.copySummary': 'Copy summary',
+      'report.docTitle': 'Report {g} · {s}/100 · {o} — Add My Rank',
+    },
+
+    de: {
+      'meta.title': 'Add My Rank — finde heraus, warum dich niemand findet',
+      'meta.description': 'Echtes Crawlability-Screening deiner Website: Score, Note und die Fixes, die zählen. Der Voll-Boost meldet dich bei 14 Suchmaschinen an.',
+
+      'nav.how': 'So funktioniert es',
+      'nav.sample': 'Beispielbericht',
+      'nav.engines': 'Suchmaschinen',
+      'nav.pricing': 'Preise',
+      'nav.faq': 'FAQ',
+      'nav.cta': 'Kostenloses Screening',
+
+      'hero.badge': 'SITEBOOST 300 · 14 SUCHMASCHINEN · KOSTENLOSES SCREENING',
+      'hero.title1': 'Finde heraus, warum deine Seite',
+      'hero.title2': 'niemand findet.',
+      'hero.p': 'Wir prüfen deine Seite mit <strong>17 echten Checks</strong> und zeigen dir Score, Note und jeden Fix nach Wirkung sortiert — in klarer Sprache, ohne Fachchinesisch. Der Voll-Boost meldet dich danach bei <strong>14 Suchmaschinen</strong> an.',
+      'hero.placeholder': 'https://deinefirma.de',
+      'hero.button': 'Seite prüfen →',
+      'hero.note': 'Kostenloses Screening — kein Konto, keine E-Mail. Echter Crawl, echtes Ergebnis.',
+      'hero.secondary': 'Was der vollständige Check enthält →',
+      'hero.trust1': 'Kein Konto nötig',
+      'hero.trust2': 'Jeder Check erklärt',
+      'hero.trust3': 'Ergebnis in Sekunden',
+
+      'panel.ready': 'BEREIT · WARTE AUF URL',
+      'panel.idle.title': 'Die Bot-Flotte ist bereit.',
+      'panel.idle.sub': '14 SUCHMASCHINEN · 17 CHECKS · ~10 SEKUNDEN',
+      'panel.stat.engines': 'Suchmaschinen',
+      'panel.stat.checks': 'Checks',
+      'panel.stat.crawl': 'Crawl',
+      'panel.crawling': 'CRAWL LÄUFT · 17 CHECKS',
+      'panel.caption': 'NUR OFFIZIELLE WEGE · KEINE ERZWUNGENE INDEXIERUNG',
+      'panel.complete': 'CRAWL ABGESCHLOSSEN · HTTP {status}',
+      'panel.scoreLabel': 'Score',
+      'panel.kicker': 'GLÜCKWUNSCH',
+      'panel.kickerClean': 'ALLES SAUBER',
+      'panel.found': 'Wir haben {n} Punkt zur Optimierung gefunden',
+      'panel.foundPlural': 'Wir haben {n} Punkte zur Optimierung gefunden',
+      'panel.clean': 'Nichts blockiert. Nur Feinschliff.',
+      'panel.checks': '{n} Checks · {c} kritisch',
+      'panel.grade': 'NOTE {g}',
+      'panel.cta': 'Zeig mir die wichtigsten Fixes',
+      'panel.again': 'Andere Seite prüfen',
+      'panel.note': 'Das ist das kostenlose Screening. Der Voll-Boost führt alle 17 Checks mit Aufwandsschätzung aus, meldet dich bei 14 Suchmaschinen an — und diese Arbeit übernehmen wir nach der Zahlung für dich.',
+      'panel.noIssues': 'Keine Probleme gefunden — stark.',
+      'panel.crawlComplete': 'Crawl abgeschlossen',
+      'panel.step1': 'DNS auflösen',
+      'panel.step2': 'Startseite laden',
+      'panel.step3': 'Weiterleitungen folgen',
+      'panel.step4': 'robots.txt lesen',
+      'panel.step5': 'sitemap.xml suchen',
+      'panel.step6': '<head> analysieren',
+      'panel.step7': 'HTTPS und Mixed Content prüfen',
+      'panel.step8': 'Bildgewicht messen',
+      'panel.step9': '5 Kategorien bewerten',
+      'panel.step10': '14 Suchmaschinen einreihen',
+
+      'err.urlRequired': 'Gib deine Website-Adresse ein, damit wir sie prüfen können.',
+      'err.urlInvalid': 'Das sieht nicht nach einer Webadresse aus. Versuch es mit deinefirma.de.',
+      'err.network': 'Der Scanner war nicht erreichbar. Prüfe deine Verbindung und versuch es erneut.',
+      'err.generic': 'Der Scan wurde nicht abgeschlossen. Versuch eine andere Adresse.',
+
+      'sample.badge': 'ECHTE AUSGABE · DAS ERHÄLTST DU MIT DEM VOLLSTÄNDIGEN CHECK',
+      'sample.title': 'Das ist der echte Bericht.',
+      'sample.p': 'Kein Mockup. Das ist eine echte Ausgabe unseres Scanners für example.com. Klick auf einen Check, um Befund und Lösung zu sehen.',
+      'sample.score': 'Score',
+      'sample.grade': 'Note',
+      'sample.checks': 'Checks',
+      'sample.fixable': 'Behebbar',
+      'sample.critical': 'Kritisch',
+      'sample.breakdown': 'Aufteilung nach Kategorie',
+      'sample.every': 'Alle Checks — Zeile aufklappen',
+      'sample.footnote': 'Live gegen example.com gescannt. Dein Bericht entsteht genauso, für deine Seite, in unter einer Minute.',
+
+      'sev.critical': 'KRITISCH',
+      'sev.high': 'HOCH',
+      'sev.medium': 'MITTEL',
+      'sev.low': 'NIEDRIG',
+      'sev.pass': 'OK',
+      'cat.indexability': 'Indexierbarkeit',
+      'cat.onpage': 'On-Page',
+      'cat.technical': 'Technik',
+      'cat.mobile': 'Mobil',
+      'cat.performance': 'Geschwindigkeit',
+
+      'how.title': 'Drei Schritte. Etwa eine Minute.',
+      'how.sub': 'Kein Konto, keine Einrichtung, kein Verkaufsgespräch.',
+      'how.s1.title': 'Seite prüfen',
+      'how.s1.p': 'Adresse eingeben. Wir crawlen live und zeigen Score, Note und was die Crawler blockiert — kostenlos, ohne E-Mail.',
+      'how.s2.title': 'Fixes sehen',
+      'how.s2.p': 'HTTPS, robots.txt, Sitemap, Titel, Meta, Canonicals, Sprache, Social-Tags, Charset, mobiler Viewport und Bildgewicht — bewertet und verständlich erklärt.',
+      'how.s3.title': 'Wir übernehmen die Arbeit',
+      'how.s3.p': 'Nach der Zahlung läuft der vollständige Check und die Anmeldung bei 14 Suchmaschinen. Du bekommst den Bericht mit allen Fixes nach Wirkung sortiert.',
+
+      'engines.title': 'Die 14 Suchmaschinen.',
+      'engines.sub': 'Nicht nur die großen drei. Wenn deine Kunden auf Deutsch, Polnisch, Russisch, Tschechisch oder Chinesisch suchen, willst du in den Maschinen sein, die sie wirklich nutzen.',
+      'engines.tier1.label': 'Stufe 1 — immer dabei',
+      'engines.tier1.p': 'Offizielle Anmeldung über Search Console und Bing Webmaster Tools, plus Sitemap-Ping wo unterstützt.',
+      'engines.tier2.label': 'Stufe 2 — regionale Giganten',
+      'engines.tier2.p': 'Russland, China, Korea. Über eine Milliarde Suchen pro Tag finden außerhalb von Google statt. Anmeldung über offizielle Webmaster-Kanäle.',
+      'engines.tier2b.label': 'Stufe 2 — lokale Champions',
+      'engines.tier2b.p': 'Tschechien, Japan, Taiwan — Märkte, in denen die lokale Suchmaschine Google klar schlägt.',
+      'engines.tier2c.label': 'Stufe 2 — unabhängig',
+      'engines.tier2c.p': 'Unabhängige, datenschutzfreundliche Crawler. Sie bringen echten Besuch, und fast niemand konkurriert dort um Plätze.',
+      'engines.tier3.label': 'Stufe 3 — der lange Schwanz',
+      'engines.tier3.p': 'Unabhängige Crawler und Privacy-Suchmaschinen. Kleinere Reichweite, keine Konkurrenz — und echter Crawl-Traffic zurück auf deine Seite.',
+      'engines.included': 'enthalten',
+      'engines.matched': 'nach Land/Sprache',
+      'engines.straight': '<span class="text-amber-700 font-bold">Klartext:</span> Niemand kann eine Suchmaschine zur Indexierung zwingen — und wir behaupten das auch nie. Wir tun alles Legitime, um dich vor jeden Crawler zu bringen: offizielle Anmeldungen, IndexNow-Pings, eine saubere Sitemap und einen Crawlability-Check, damit dich nichts still blockiert.',
+
+      'pricing.boost.label': 'SiteBoost 300 — Der Boost',
+      'pricing.oneTime': 'einmalig · alles inklusive',
+      'pricing.b1': '<strong>17-Punkte-Audit</strong> mit Score, Note und sortierten Fixes',
+      'pricing.b2': '<strong>Jeder Befund erklärt</strong> — mit der genauen Lösung',
+      'pricing.b3': 'Anmeldung bei 14 Suchmaschinen, passend zu deinem Markt',
+      'pricing.b4': 'IndexNow-Pings an jede Maschine, die sie unterstützt',
+      'pricing.cta': 'Vollen Boost holen — 7 $',
+      'pricing.next.label': 'Nach deinem Boost',
+      'pricing.next.title': 'Fix-Pakete',
+      'pricing.next.p': 'Wenn das Screening Probleme findet: selbst beheben mit dem Bericht — oder beheben lassen. Software erledigt Schema, Meta und Sitemaps, Spezialisten den Rest.',
+      'pricing.p1': 'Fix-Pakete direkt aus dem Bericht',
+      'pricing.p2': 'Automatisch: Sitemap, Meta, robots',
+      'pricing.p3': 'Von Spezialisten: Inhalte, Einträge',
+      'pricing.p4': 'Erneuter Boost zur Kontrolle inklusive',
+      'pricing.next.foot': 'ab 97 $ · Preis je Paket nach dem Scan',
+
+      'faq.title': 'Klare Antworten.',
+      'faq.q1': 'Was bekomme ich konkret?',
+      'faq.a1': 'Einen vollständigen Bericht zum Sofort-Öffnen: Score von 100, eine Note, eine Aufteilung in fünf Kategorien (Indexierbarkeit, On-Page, Technik, Mobil, Geschwindigkeit) und alle 17 Checks mit Befund und genauer Lösung. Dazu melden wir deine Seite bei 14 Suchmaschinen an.',
+      'faq.q2': 'Ich bin nicht technisch. Verstehe ich das?',
+      'faq.a2': 'Genau dafür ist es gebaut. Jeder Befund sagt, was er ist, warum er zählt und was zu tun ist. Wenn ein Fix zu viel ist, gib den Bericht zurück und wir erledigen ihn.',
+      'faq.q3': 'Bin ich morgen Platz 1 bei Google?',
+      'faq.a3': 'Nein — und lauf weg von jedem, der das verspricht. Du bekommst die Anmeldung bei 14 Suchmaschinen, IndexNow-Pings und jedes Crawler-Problem erklärt. Das Ranking hängt von Inhalten und Wettbewerb ab — aber ohne Crawlbarkeit geht gar nichts.',
+      'faq.q4': 'Wo genau meldet ihr mich an?',
+      'faq.a4': 'Nur offizielle Kanäle: Google Search Console, Bing Webmaster Tools (versorgt auch DuckDuckGo und Yahoo), Baidu Zhanzhang, Yandex Webmaster, Naver Search Advisor, Seznam Webmaster, dazu IndexNow-Pings und Stufe-3-Maschinen passend zu Land und Sprache.',
+      'faq.q5': 'Baut ihr Spam-Backlinks?',
+      'faq.a5': 'Nein — niemals. Gekaufte Linknetzwerke verstoßen gegen Googles Spam-Richtlinien und können deine Seite abstrafen. Dein Boost sind Anmeldungen, Pings und Crawlbarkeit: saubere Arbeit, die hilft und nicht schaden kann.',
+
+      'cta.title': 'Bereit, gefunden zu werden?',
+      'cta.p': 'Seite kostenlos prüfen. Fixes sehen. Danach entscheiden.',
+      'cta.button': 'Seite kostenlos prüfen',
+      'cta.secondary': 'Den vollen Boost ansehen',
+
+      'footer.left': '© 2026 Add My Rank — nur offizielle Anmeldungen, niemals Spam-Links.',
+      'footer.right': 'SiteBoost 300 · prüfen, boosten, gefunden werden',
+
+      'lang.label': 'Sprache',
+
+      'boost.meta.title': 'Meinen Rang boosten — Add My Rank · SiteBoost 300',
+      'boost.meta.description': 'Melde deine Seite bei 14 Suchmaschinen an und erhalte den vollständigen Bericht mit 17 Checks.',
+      'boost.marketNote': '{engine} rückt nach vorn — die wichtigste Suchmaschine für deinen Markt.',
+      'boost.step': 'SITEBOOST 300 · SCHRITT 1 VON 2',
+      'boost.questions': 'Fragen?',
+      'boost.badge': '7 $ · EINE ZAHLUNG · KEIN ABO',
+      'boost.title': 'Mein Ranking boosten.',
+      'boost.sub': 'Sag uns, wo du zu finden bist. Wir melden deine Seite bei jeder Suchmaschine an, die dein Markt braucht — offiziell — und prüfen, dass nichts die Crawler blockiert.',
+      'boost.urlLabel': 'Deine Website *',
+      'boost.emailLabel': 'E-Mail für den Bericht *',
+      'boost.urlPlaceholder': 'https://deinefirma.de',
+      'boost.emailPlaceholder': 'du@deinefirma.de',
+      'boost.country': 'Land',
+      'boost.language': 'Sprache',
+      'boost.medium': 'So finden dich Kunden',
+      'boost.mediumWeb': '🌐 Websuche',
+      'boost.mediumPhone': '📞 Telefon & lokal',
+      'boost.mediumNote': 'Telefon & lokal ergänzt Prüfungen für lokale Einträge (Maps, Verzeichnisse, Unternehmensprofile).',
+      'boost.fleet': 'Deine Suchmaschinen',
+      'boost.selected': '{n}/14 ausgewählt',
+      'boost.summaryOneTime': 'einmalig',
+      'boost.summary1': '{n} Anmeldungen bei Suchmaschinen, offizielle Kanäle',
+      'boost.summary2': 'IndexNow-Ping an alle unterstützenden Maschinen',
+      'boost.summary3': 'Crawlability-Check: robots, Sitemap, Meta',
+      'boost.summary4': 'Bericht per E-Mail in wenigen Minuten',
+      'boost.total': 'Heute fällig',
+      'boost.pay': '7 $ zahlen & Boost starten →',
+      'boost.payNote': 'Sichere Kartenzahlung über Stripe. Der Scan startet, sobald die Zahlung eingeht.',
+      'boost.checkout': 'Sichere Stripe-Kasse wird geöffnet…',
+      'boost.verify': 'Zahlung erhalten — wird geprüft, dann scannen wir deine Seite…',
+      'boost.scanning': 'Deine Seite wird kontaktiert…',
+      'boost.complete': 'Scan fertig — Bericht wird geöffnet…',
+      'boost.devMode': 'Stripe ist lokal nicht konfiguriert — Scan läuft ohne Zahlung…',
+      'boost.canceled': 'Zahlung abgebrochen — es wurde nichts berechnet. Deine Angaben bleiben im Formular.',
+      'boost.errUrl': 'Gib deine Website-Adresse ein, damit wir wissen, was wir scannen sollen.',
+      'boost.errUrlShape': 'Das sieht nicht nach einer Webadresse aus. Versuch es mit deinefirma.de.',
+      'boost.errEmail': 'Gib die E-Mail-Adresse an, an die der Bericht gehen soll.',
+      'boost.errNetwork': 'Zahlungsanbieter nicht erreichbar. Prüfe deine Verbindung und versuch es erneut.',
+      'boost.errCheckout': 'Die Kasse konnte nicht gestartet werden. Bitte erneut versuchen.',
+      'boost.errScanNetwork': 'Der Scanner war nicht erreichbar. Prüfe deine Verbindung und versuch es erneut.',
+      'boost.errScan': 'Der Scan ist fehlgeschlagen. Prüfe die Adresse und versuch es erneut.',
+
+      'report.meta.title': 'Dein Listing-Bericht — Add My Rank',
+      'report.meta.description': 'Dein Crawlability- und Einreichungsbericht von Add My Rank.',
+      'report.nav': 'LISTING-BERICHT',
+      'report.savePdf': 'Als PDF speichern',
+      'report.loading.title': 'Dein Bericht wird geöffnet…',
+      'report.loading.sub': 'Signierte Ergebnisse werden geladen.',
+      'report.error.invalid': 'Dieser Berichtslink ist ungültig.',
+      'report.error.hint': 'Berichtslinks sind signiert und manipulationssicher. Wenn dieser abgeschnitten wurde, starte einen neuen Scan.',
+      'report.error.cta': 'Neuen Scan starten — 7 $',
+      'report.badge': 'SCAN ABGESCHLOSSEN ·',
+      'report.paid': 'ZAHLUNG BESTÄTIGT · $',
+      'report.h1': 'Dein Listing-Bericht.',
+      'report.score': 'Score',
+      'report.grade': 'Note',
+      'report.checks': 'Checks',
+      'report.fixable': 'Behebbar',
+      'report.critical': 'Kritisch',
+      'report.actions.title': 'Diese zuerst beheben',
+      'report.actions.sub': 'Nach Wirkung sortiert. Jeden Punkt kannst du heute angehen.',
+      'report.fleet.title': 'Deine Suchmaschinen',
+      'report.fleet.sub': 'Einreichungen für deine Seite vorgemerkt.',
+      'report.fleet.fallback': 'Suchmaschinen wurden mit diesem Scan erfasst.',
+      'report.all.title': 'Alle Checks',
+      'report.all.sub': 'Das vollständige Crawlability-Audit, nichts verborgen.',
+      'report.upsell.title': 'Willst du das nicht selbst machen?',
+      'report.upsell.p': 'Schick uns diesen Bericht und wir setzen die Fixes um — Schema, Meta-Tags, Sitemaps und Profile automatisch, Spezialisten für den Rest. Danach scannen wir erneut als Nachweis.',
+      'report.upsell.cta': 'Fix-Paket holen',
+      'report.fix': 'Lösung:',
+      'report.issueOne': '{n} Problem',
+      'report.issueMany': '{n} Probleme',
+      'report.none': 'Nichts Kritisches — deine Seite ist in guter Form. Optionaler Feinschliff unten.',
+      'report.errNoToken': 'Es wurde kein Berichtstoken übergeben.',
+      'report.errLoad': 'Der Bericht konnte nicht geladen werden. Prüfe deine Verbindung und lade neu.',
+      'report.band.strong': 'Stark — behebe den Rest und du bist fertig',
+      'report.band.ok': 'Ordentlich — ein paar Fixes heben das an',
+      'report.band.weak': 'Diese zuerst beheben',
+      'report.effort.quick': 'Unter 10 Min',
+      'report.effort.mid': '10–30 Min',
+      'report.effort.long': 'Länger',
+      'report.done.aria': 'Als erledigt markieren',
+      'report.progress': '{done} von {total} erledigt',
+      'report.progress.reset': 'Zurücksetzen',
+      'report.copy': 'Fix kopieren',
+      'report.copied': 'Kopiert',
+      'report.copySummary': 'Zusammenfassung kopieren',
+      'report.docTitle': 'Bericht {g} · {s}/100 · {o} — Add My Rank',
+    },
+
+    pl: {
+      'meta.title': 'Add My Rank — dowiedz się, dlaczego nikt nie znajduje Twojej strony',
+      'meta.description': 'Prawdziwy audyt indeksowalności: wynik, ocena i poprawki, które mają znaczenie. Pełny boost zgłasza stronę do 14 wyszukiwarek.',
+
+      'nav.how': 'Jak to działa',
+      'nav.sample': 'Przykładowy raport',
+      'nav.engines': 'Wyszukiwarki',
+      'nav.pricing': 'Cennik',
+      'nav.faq': 'FAQ',
+      'nav.cta': 'Darmowy test',
+
+      'hero.badge': 'SITEBOOST 300 · 14 WYSZUKIWAREK · DARMOWY TEST',
+      'hero.title1': 'Dowiedz się, dlaczego Twojej strony',
+      'hero.title2': 'nikt nie znajduje.',
+      'hero.p': 'Sprawdzamy Twoją stronę <strong>17 prawdziwymi testami</strong> i pokazujemy wynik, ocenę oraz wszystkie poprawki uszeregowane według wpływu — prostym językiem. Pełny boost zgłasza Cię do <strong>14 wyszukiwarek</strong>.',
+      'hero.placeholder': 'https://twojafirma.pl',
+      'hero.button': 'Sprawdź stronę →',
+      'hero.note': 'Darmowy test — bez konta, bez e-maila. Prawdziwy crawl, prawdziwy wynik.',
+      'hero.secondary': 'Co zawiera pełny test →',
+      'hero.trust1': 'Bez konta',
+      'hero.trust2': 'Każdy test wyjaśniony',
+      'hero.trust3': 'Wynik w sekundach',
+
+      'panel.ready': 'GOTOWE · CZEKAM NA ADRES',
+      'panel.idle.title': 'Flota botów czeka.',
+      'panel.idle.sub': '14 WYSZUKIWAREK · 17 TESTÓW · ~10 SEKUND',
+      'panel.stat.engines': 'Wyszukiwarki',
+      'panel.stat.checks': 'Testy',
+      'panel.stat.crawl': 'Crawl',
+      'panel.crawling': 'CRAWL W TOKU · 17 TESTÓW',
+      'panel.caption': 'TYLKO OFICJALNE KANAŁY · BEZ WYMUSZANIA INDEKSU',
+      'panel.complete': 'CRAWL ZAKOŃCZONY · HTTP {status}',
+      'panel.scoreLabel': 'Wynik',
+      'panel.kicker': 'GRATULACJE',
+      'panel.kickerClean': 'WSZYSTKO CZYSTE',
+      'panel.found': 'Znaleźliśmy {n} rzecz do poprawy',
+      'panel.foundPlural': 'Znaleźliśmy {n} rzeczy do poprawy',
+      'panel.clean': 'Nic nie blokuje. Został tylko szlif.',
+      'panel.checks': '{n} testów · {c} krytycznych',
+      'panel.grade': 'OCENA {g}',
+      'panel.cta': 'Pokaż, co poprawić najpierw',
+      'panel.again': 'Sprawdź inną stronę',
+      'panel.note': 'To darmowy test. Pełny boost uruchamia wszystkie 17 testów z szacowanym czasem poprawki, zgłasza stronę do 14 wyszukiwarek — a my wykonujemy tę pracę po płatności.',
+      'panel.noIssues': 'Brak problemów — dobra robota.',
+      'panel.crawlComplete': 'crawl zakończony',
+      'panel.step1': 'rozwiązywanie DNS',
+      'panel.step2': 'pobieranie strony głównej',
+      'panel.step3': 'przechodzenie przekierowań',
+      'panel.step4': 'czytanie robots.txt',
+      'panel.step5': 'szukanie sitemap.xml',
+      'panel.step6': 'analiza <head>',
+      'panel.step7': 'sprawdzanie HTTPS i mixed content',
+      'panel.step8': 'pomiar wagi obrazów',
+      'panel.step9': 'ocena 5 kategorii',
+      'panel.step10': 'kolejkowanie 14 wyszukiwarek',
+
+      'err.urlRequired': 'Podaj adres strony, żebyśmy mogli ją sprawdzić.',
+      'err.urlInvalid': 'To nie wygląda na adres strony. Spróbuj twojafirma.pl.',
+      'err.network': 'Nie udało się połączyć ze skanerem. Sprawdź połączenie i spróbuj ponownie.',
+      'err.generic': 'Skan nie został ukończony. Spróbuj innego adresu.',
+
+      'sample.badge': 'PRAWDZIWY WYNIK · TO DOSTAJESZ W PEŁNYM TEŚCIE',
+      'sample.title': 'To jest prawdziwy raport.',
+      'sample.p': 'To nie makieta. To prawdziwy wynik naszego skanera dla example.com. Kliknij dowolny test, żeby zobaczyć wynik i poprawkę.',
+      'sample.score': 'Wynik',
+      'sample.grade': 'Ocena',
+      'sample.checks': 'Testy',
+      'sample.fixable': 'Do naprawy',
+      'sample.critical': 'Krytyczne',
+      'sample.breakdown': 'Podział na kategorie',
+      'sample.every': 'Wszystkie testy — rozwiń wiersz',
+      'sample.footnote': 'Skan na żywo example.com. Twój raport powstaje tak samo, dla Twojej strony, w mniej niż minutę.',
+
+      'sev.critical': 'KRYTYCZNY',
+      'sev.high': 'WYSOKI',
+      'sev.medium': 'ŚREDNI',
+      'sev.low': 'NISKI',
+      'sev.pass': 'OK',
+      'cat.indexability': 'Indeksowalność',
+      'cat.onpage': 'On-page',
+      'cat.technical': 'Technika',
+      'cat.mobile': 'Mobile',
+      'cat.performance': 'Szybkość',
+
+      'how.title': 'Trzy kroki. Około minuty.',
+      'how.sub': 'Bez konta, bez konfiguracji, bez rozmowy sprzedażowej.',
+      'how.s1.title': 'Sprawdź stronę',
+      'how.s1.p': 'Podaj adres. Crawlujemy na żywo i pokazujemy wynik, ocenę i to, co blokuje roboty — bezpłatnie, bez e-maila.',
+      'how.s2.title': 'Zobacz poprawki',
+      'how.s2.p': 'HTTPS, robots.txt, sitemap, tytuł, meta, canonical, język, tagi social, charset, viewport i waga obrazów — ocenione i wyjaśnione po ludzku.',
+      'how.s3.title': 'My wykonujemy pracę',
+      'how.s3.p': 'Po płatności uruchamiamy pełny test i zgłaszamy stronę do 14 wyszukiwarek, a potem wysyłamy raport z poprawkami według wpływu.',
+
+      'engines.title': 'Te 14 wyszukiwarek.',
+      'engines.sub': 'Nie tylko trzy największe. Jeśli klienci szukają po polsku, niemiecku, rosyjsku, czesku czy chińsku, chcesz być tam, gdzie oni naprawdę szukają.',
+      'engines.tier1.label': 'Poziom 1 — zawsze w zestawie',
+      'engines.tier1.p': 'Oficjalne zgłoszenie przez Search Console i Bing Webmaster Tools oraz ping sitemapy, gdzie to możliwe.',
+      'engines.tier2.label': 'Poziom 2 — regionalni giganci',
+      'engines.tier2.p': 'Rosja, Chiny, Korea. Ponad miliard wyszukiwań dziennie odbywa się poza Google. Zgłoszenie przez oficjalne kanały webmasterów.',
+      'engines.tier2b.label': 'Poziom 2 — lokalni czempioni',
+      'engines.tier2b.p': 'Czechy, Japonia, Tajwan — rynki, gdzie lokalna wyszukiwarka wygrywa z Google.',
+      'engines.tier2c.label': 'Poziom 2 — niezależni',
+      'engines.tier2c.p': 'Niezależne, prywatnościowe roboty. Przynoszą prawdziwy ruch, a konkurencja o miejsca jest znikoma.',
+      'engines.tier3.label': 'Poziom 3 — długi ogon',
+      'engines.tier3.p': 'Niezależne roboty i wyszukiwarki prywatnościowe. Mniejszy zasięg, zero konkurencji — i prawdziwy ruch z crawla.',
+      'engines.included': 'w zestawie',
+      'engines.matched': 'dopasowane do kraju/języka',
+      'engines.straight': '<span class="text-amber-700 font-bold">Bez ściemy:</span> nikt nie wymusi indeksacji — i nigdy tego nie obiecujemy. Robimy wszystko, co legalne: oficjalne zgłoszenia, pingi IndexNow, czystą sitemapę i test crawlability, żeby nic Cię po cichu nie blokowało.',
+
+      'pricing.boost.label': 'SiteBoost 300 — Boost',
+      'pricing.oneTime': 'jednorazowo · wszystko w cenie',
+      'pricing.b1': '<strong>Audyt 17 punktów</strong> z wynikiem, oceną i poprawkami',
+      'pricing.b2': '<strong>Każdy wynik wyjaśniony</strong> wraz z dokładną poprawką',
+      'pricing.b3': 'Zgłoszenie do 14 wyszukiwarek dopasowanych do rynku',
+      'pricing.b4': 'Pingi IndexNow do wszystkich wspierających wyszukiwarek',
+      'pricing.cta': 'Pełny boost — 7 $',
+      'pricing.next.label': 'Po boostcie',
+      'pricing.next.title': 'Pakiety poprawek',
+      'pricing.next.p': 'Jeśli test znajdzie problemy, popraw je sam z raportem — albo zleć nam. Oprogramowanie robi schema, meta i sitemapy, resztą zajmują się specjaliści.',
+      'pricing.p1': 'Pakiety poprawek jednym kliknięciem z raportu',
+      'pricing.p2': 'Automatycznie: sitemap, meta, robots',
+      'pricing.p3': 'Specjaliści: treści, wpisy',
+      'pricing.p4': 'Ponowny boost w cenie, żeby sprawdzić efekt',
+      'pricing.next.foot': 'od 97 $ · cena za pakiet po skanie',
+
+      'faq.title': 'Konkretne odpowiedzi.',
+      'faq.q1': 'Co dokładnie dostaję?',
+      'faq.a1': 'Pełny raport do otwarcia od razu: wynik na 100, ocena, podział na pięć kategorii (indeksowalność, on-page, technika, mobile, szybkość) i wszystkie 17 testów z wynikiem i dokładną poprawką. Do tego zgłoszenie strony do 14 wyszukiwarek.',
+      'faq.q2': 'Nie jestem techniczny. Zrozumiem to?',
+      'faq.a2': 'Dla takich osób to jest zrobione. Każdy wynik mówi, czym jest, dlaczego ma znaczenie i co zrobić. Jeśli poprawka jest za trudna, oddaj raport i zrobimy ją za Ciebie.',
+      'faq.q3': 'Będę jutro pierwszy w Google?',
+      'faq.a3': 'Nie — i uciekaj od każdego, kto to obiecuje. Dostajesz zgłoszenie do 14 wyszukiwarek, pingi IndexNow i wyjaśnienie każdego problemu z crawlem. Pozycja zależy od treści i konkurencji, ale bez crawlability nie ma szans.',
+      'faq.q4': 'Do czego dokładnie zgłaszacie?',
+      'faq.a4': 'Tylko oficjalne kanały: Google Search Console, Bing Webmaster Tools (zasila też DuckDuckGo i Yahoo), Baidu Zhanzhang, Yandex Webmaster, Naver Search Advisor, Seznam Webmaster, plus pingi IndexNow i wyszukiwarki poziomu 3 dopasowane do kraju i języka.',
+      'faq.q5': 'Budujecie spamowe linki?',
+      'faq.a5': 'Nie — nigdy. Masowe schematy linków łamią zasady Google i mogą zaszkodzić stronie. Twój boost to zgłoszenia, pingi i crawlability: czysta praca, która pomaga i nie szkodzi.',
+
+      'cta.title': 'Gotowy, żeby Cię znaleziono?',
+      'cta.p': 'Sprawdź stronę za darmo. Zobacz poprawki. Zdecyduj potem.',
+      'cta.button': 'Sprawdź stronę za darmo',
+      'cta.secondary': 'Zobacz pełny boost',
+
+      'footer.left': '© 2026 Add My Rank — tylko oficjalne zgłoszenia, nigdy spam-linków.',
+      'footer.right': 'SiteBoost 300 · sprawdź, boostuj, bądź widoczny',
+
+      'lang.label': 'Język',
+
+      'boost.meta.title': 'Podbij moją pozycję — Add My Rank · SiteBoost 300',
+      'boost.meta.description': 'Zgłoś stronę do 14 wyszukiwarek i odbierz pełny raport z 17 testami.',
+      'boost.marketNote': '{engine} przesuwa się na początek kolejki — to główna wyszukiwarka na Twoim rynku.',
+      'boost.step': 'SITEBOOST 300 · KROK 1 Z 2',
+      'boost.questions': 'Pytania?',
+      'boost.badge': '7 $ · JEDNA PŁATNOŚĆ · BEZ SUBSKRYPCJI',
+      'boost.title': 'Podbij moją pozycję.',
+      'boost.sub': 'Powiedz nam, gdzie Cię szukać. Zgłaszamy stronę do każdej wyszukiwarki potrzebnej na Twoim rynku — oficjalnie — i sprawdzamy, czy nic nie blokuje robotów.',
+      'boost.urlLabel': 'Twoja strona *',
+      'boost.emailLabel': 'E-mail do raportu *',
+      'boost.urlPlaceholder': 'https://twojafirma.pl',
+      'boost.emailPlaceholder': 'ty@twojafirma.pl',
+      'boost.country': 'Kraj',
+      'boost.language': 'Język',
+      'boost.medium': 'Jak klienci Cię znajdują',
+      'boost.mediumWeb': '🌐 Wyszukiwarka',
+      'boost.mediumPhone': '📞 Telefon i lokalnie',
+      'boost.mediumNote': 'Telefon i lokalnie dodaje testy lokalnych wpisów (mapy, katalogi, profile firm).',
+      'boost.fleet': 'Twoje wyszukiwarki',
+      'boost.selected': '{n}/14 wybranych',
+      'boost.summaryOneTime': 'jednorazowo',
+      'boost.summary1': '{n} zgłoszeń do wyszukiwarek, oficjalne kanały',
+      'boost.summary2': 'Ping IndexNow do wszystkich wspierających',
+      'boost.summary3': 'Test crawlability: robots, sitemap, meta',
+      'boost.summary4': 'Raport na e-mail w kilka minut',
+      'boost.total': 'Do zapłaty dziś',
+      'boost.pay': 'Zapłać 7 $ i startuj →',
+      'boost.payNote': 'Bezpieczna płatność kartą przez Stripe. Skan rusza, gdy płatność zostanie potwierdzona.',
+      'boost.checkout': 'Otwieranie bezpiecznej kasy Stripe…',
+      'boost.verify': 'Płatność otrzymana — weryfikujemy i skanujemy Twoją stronę…',
+      'boost.scanning': 'Łączymy się z Twoją stroną…',
+      'boost.complete': 'Skan gotowy — otwieramy raport…',
+      'boost.devMode': 'Stripe nie jest skonfigurowany lokalnie — skan bez płatności…',
+      'boost.canceled': 'Płatność anulowana — nic nie zostało pobrane. Twoje dane zostały w formularzu.',
+      'boost.errUrl': 'Podaj adres strony, żebyśmy wiedzieli, co skanować.',
+      'boost.errUrlShape': 'To nie wygląda na adres strony. Spróbuj twojafirma.pl.',
+      'boost.errEmail': 'Podaj adres e-mail, na który mamy wysłać raport.',
+      'boost.errNetwork': 'Nie udało się połączyć z operatorem płatności. Sprawdź połączenie i spróbuj ponownie.',
+      'boost.errCheckout': 'Nie udało się uruchomić kasy. Spróbuj ponownie.',
+      'boost.errScanNetwork': 'Nie udało się połączyć ze skanerem. Sprawdź połączenie i spróbuj ponownie.',
+      'boost.errScan': 'Skan nie powiódł się. Sprawdź adres i spróbuj ponownie.',
+
+      'report.meta.title': 'Twój raport listingowy — Add My Rank',
+      'report.meta.description': 'Twój raport indeksowalności i zgłoszeń Add My Rank.',
+      'report.nav': 'RAPORT LISTINGOWY',
+      'report.savePdf': 'Zapisz PDF',
+      'report.loading.title': 'Otwieramy Twój raport…',
+      'report.loading.sub': 'Pobieranie podpisanych wyników.',
+      'report.error.invalid': 'Ten link do raportu jest nieprawidłowy.',
+      'report.error.hint': 'Linki do raportów są podpisane i odporne na manipulacje. Jeśli ten został ucięty, uruchom nowy skan.',
+      'report.error.cta': 'Uruchom nowy skan — 7 $',
+      'report.badge': 'SKAN ZAKOŃCZONY ·',
+      'report.paid': 'PŁATNOŚĆ POTWIERDZONA · $',
+      'report.h1': 'Twój raport listingowy.',
+      'report.score': 'Wynik',
+      'report.grade': 'Ocena',
+      'report.checks': 'Testy',
+      'report.fixable': 'Do naprawy',
+      'report.critical': 'Krytyczne',
+      'report.actions.title': 'To napraw najpierw',
+      'report.actions.sub': 'Uporządkowane według wpływu. Każdy punkt możesz zmienić już dziś.',
+      'report.fleet.title': 'Twoje wyszukiwarki',
+      'report.fleet.sub': 'Zgłoszenia zakolejkowane dla Twojej strony.',
+      'report.fleet.fallback': 'Wyszukiwarki zapisane przy tym skanie.',
+      'report.all.title': 'Wszystkie testy',
+      'report.all.sub': 'Pełny audyt indeksowalności, nic nie jest ukryte.',
+      'report.upsell.title': 'Nie chcesz robić tego sam?',
+      'report.upsell.p': 'Wyślij nam ten raport, a my wprowadzimy poprawki — schema, meta tagi, sitemapy i profile automatycznie, resztę zrobią specjaliści. Potem skanujemy ponownie, żeby to potwierdzić.',
+      'report.upsell.cta': 'Zamów pakiet poprawek',
+      'report.fix': 'Poprawka:',
+      'report.issueOne': '{n} problem',
+      'report.issueMany': '{n} problemów',
+      'report.none': 'Nic krytycznego — strona jest w dobrej formie. Opcjonalny szlif poniżej.',
+      'report.errNoToken': 'Nie przekazano tokenu raportu.',
+      'report.errLoad': 'Nie udało się wczytać raportu. Sprawdź połączenie i odśwież stronę.',
+      'report.band.strong': 'Mocno — napraw resztę i gotowe',
+      'report.band.ok': 'Nieźle — kilka poprawek podniesie wynik',
+      'report.band.weak': 'To napraw najpierw',
+      'report.effort.quick': 'Do 10 min',
+      'report.effort.mid': '10–30 min',
+      'report.effort.long': 'Dłużej',
+      'report.done.aria': 'Oznacz jako zrobione',
+      'report.progress': '{done} z {total} zrobione',
+      'report.progress.reset': 'Wyczyść',
+      'report.copy': 'Kopiuj poprawkę',
+      'report.copied': 'Skopiowano',
+      'report.copySummary': 'Kopiuj podsumowanie',
+      'report.docTitle': 'Raport {g} · {s}/100 · {o} — Add My Rank',
+    },
+
+    fr: {
+      'meta.title': 'Add My Rank — découvrez pourquoi personne ne trouve votre site',
+      'meta.description': "Un vrai test d'explorabilité : score, note et les corrections qui comptent. Le boost complet vous inscrit sur 14 moteurs de recherche.",
+
+      'nav.how': 'Comment ça marche',
+      'nav.sample': 'Rapport exemple',
+      'nav.engines': 'Moteurs',
+      'nav.pricing': 'Tarifs',
+      'nav.faq': 'FAQ',
+      'nav.cta': 'Test gratuit',
+
+      'hero.badge': 'SITEBOOST 300 · 14 MOTEURS · TEST GRATUIT',
+      'hero.title1': 'Découvrez pourquoi votre site',
+      'hero.title2': 'reste invisible.',
+      'hero.p': 'Nous testons votre site avec <strong>17 contrôles réels</strong> et vous montrons le score, la note et chaque correction classée par impact — sans jargon. Le boost complet vous inscrit ensuite sur <strong>14 moteurs de recherche</strong>.',
+      'hero.placeholder': 'https://votreentreprise.fr',
+      'hero.button': 'Tester mon site →',
+      'hero.note': 'Test gratuit — sans compte, sans e-mail. Vrai crawl, vrai score.',
+      'hero.secondary': 'Ce que comprend le contrôle complet →',
+      'hero.trust1': 'Sans compte',
+      'hero.trust2': 'Chaque contrôle expliqué',
+      'hero.trust3': 'Résultat en quelques secondes',
+
+      'panel.ready': 'PRÊT · EN ATTENTE D’UNE URL',
+      'panel.idle.title': 'La flotte de robots est prête.',
+      'panel.idle.sub': '14 MOTEURS · 17 CONTRÔLES · ~10 SECONDES',
+      'panel.stat.engines': 'Moteurs',
+      'panel.stat.checks': 'Contrôles',
+      'panel.stat.crawl': 'Exploration',
+      'panel.crawling': 'EXPLORATION EN COURS · 17 CONTRÔLES',
+      'panel.caption': 'CANAUX OFFICIELS UNIQUEMENT · AUCUNE INDEXATION FORCÉE',
+      'panel.complete': 'CRAWL TERMINÉ · HTTP {status}',
+      'panel.scoreLabel': 'Score',
+      'panel.kicker': 'FÉLICITATIONS',
+      'panel.kickerClean': 'TOUT EST PROPRE',
+      'panel.found': 'Nous avons trouvé {n} point à optimiser',
+      'panel.foundPlural': 'Nous avons trouvé {n} points à optimiser',
+      'panel.clean': 'Rien ne bloque. Juste de la finition.',
+      'panel.checks': '{n} contrôles · {c} critiques',
+      'panel.grade': 'NOTE {g}',
+      'panel.cta': 'Voir les corrections prioritaires',
+      'panel.again': 'Tester un autre site',
+      'panel.note': "Ceci est le test gratuit. Le boost complet exécute les 17 contrôles avec estimation d'effort, vous inscrit sur 14 moteurs — et c'est nous qui faisons ce travail après le paiement.",
+      'panel.noIssues': 'Aucun problème — beau travail.',
+      'panel.crawlComplete': 'crawl terminé',
+      'panel.step1': 'résolution DNS',
+      'panel.step2': 'récupération de la page',
+      'panel.step3': 'suivi des redirections',
+      'panel.step4': 'lecture de robots.txt',
+      'panel.step5': 'recherche de sitemap.xml',
+      'panel.step6': 'analyse du <head>',
+      'panel.step7': 'vérification HTTPS et mixed content',
+      'panel.step8': 'mesure du poids des images',
+      'panel.step9': 'notation de 5 catégories',
+      'panel.step10': 'mise en file des 14 moteurs',
+
+      'err.urlRequired': "Ajoutez l'adresse de votre site pour le tester.",
+      'err.urlInvalid': "Cela ne ressemble pas à une adresse web. Essayez votreentreprise.fr.",
+      'err.network': 'Le scanner est injoignable. Vérifiez votre connexion et réessayez.',
+      'err.generic': "Le test n'a pas abouti. Essayez une autre adresse.",
+
+      'sample.badge': 'RÉSULTAT RÉEL · VOILÀ CE QUE DONNE LE CONTRÔLE COMPLET',
+      'sample.title': 'Voici le vrai rapport.',
+      'sample.p': "Pas une maquette. C'est la sortie réelle de notre scanner sur example.com. Cliquez sur un contrôle pour voir le constat et la correction.",
+      'sample.score': 'Score',
+      'sample.grade': 'Note',
+      'sample.checks': 'Contrôles',
+      'sample.fixable': 'À corriger',
+      'sample.critical': 'Critiques',
+      'sample.breakdown': 'Répartition par catégorie',
+      'sample.every': 'Tous les contrôles — dépliez une ligne',
+      'sample.footnote': 'Scanné en direct sur example.com. Votre rapport est généré de la même façon, pour votre site, en moins d’une minute.',
+
+      'sev.critical': 'CRITIQUE',
+      'sev.high': 'ÉLEVÉ',
+      'sev.medium': 'MOYEN',
+      'sev.low': 'FAIBLE',
+      'sev.pass': 'OK',
+      'cat.indexability': 'Indexabilité',
+      'cat.onpage': 'On-page',
+      'cat.technical': 'Technique',
+      'cat.mobile': 'Mobile',
+      'cat.performance': 'Vitesse',
+
+      'how.title': 'Trois étapes. Une minute environ.',
+      'how.sub': 'Sans compte, sans installation, sans appel commercial.',
+      'how.s1.title': 'Testez votre site',
+      'how.s1.p': 'Ajoutez votre URL. Nous explorons en direct et montrons le score, la note et ce qui bloque les robots — gratuitement, sans e-mail.',
+      'how.s2.title': 'Voyez les corrections',
+      'how.s2.p': 'HTTPS, robots.txt, sitemap, titre, meta, canoniques, langue, balises sociales, charset, viewport mobile et poids des images — notés et expliqués simplement.',
+      'how.s3.title': 'Nous faisons le travail',
+      'how.s3.p': 'Après paiement, nous lançons le contrôle complet et vous inscrivons sur 14 moteurs, puis envoyons le rapport avec les corrections classées par impact.',
+
+      'engines.title': 'Les 14 moteurs.',
+      'engines.sub': 'Pas seulement les trois géants. Si vos clients cherchent en français, polonais, russe, tchèque ou chinois, soyez sur les moteurs qu’ils utilisent vraiment.',
+      'engines.tier1.label': 'Niveau 1 — toujours inclus',
+      'engines.tier1.p': 'Soumission officielle via Search Console et Bing Webmaster Tools, plus ping du sitemap quand c’est pris en charge.',
+      'engines.tier2.label': 'Niveau 2 — géants régionaux',
+      'engines.tier2.p': 'Russie, Chine, Corée. Plus d’un milliard de recherches par jour se font hors de Google. Soumission via les canaux officiels.',
+      'engines.tier2b.label': 'Niveau 2 — champions locaux',
+      'engines.tier2b.p': 'Tchéquie, Japon, Taïwan — des marchés où le moteur local dépasse Google.',
+      'engines.tier2c.label': 'Niveau 2 — indépendants',
+      'engines.tier2c.p': 'Des robots indépendants et respectueux de la vie privée. Ils apportent du vrai trafic, et presque personne n’y rivalise.',
+      'engines.tier3.label': 'Niveau 3 — la longue traîne',
+      'engines.tier3.p': 'Robots indépendants et moteurs privés. Portée plus faible, zéro concurrence, et du vrai trafic de crawl vers votre site.',
+      'engines.included': 'inclus',
+      'engines.matched': 'selon pays/langue',
+      'engines.straight': '<span class="text-amber-700 font-bold">Sans détour :</span> personne ne peut forcer un moteur à vous indexer — et nous ne le prétendrons jamais. Nous faisons tout ce qui est légitime : soumissions officielles, pings IndexNow, sitemap propre et vérification d’explorabilité pour que rien ne vous bloque.',
+
+      'pricing.boost.label': 'SiteBoost 300 — Le Boost',
+      'pricing.oneTime': 'une fois · tout compris',
+      'pricing.b1': '<strong>Audit en 17 points</strong> avec score, note et corrections classées',
+      'pricing.b2': '<strong>Chaque constat expliqué</strong>, avec la correction exacte',
+      'pricing.b3': 'Inscription sur 14 moteurs, adaptés à votre marché',
+      'pricing.b4': 'Pings IndexNow vers tous les moteurs compatibles',
+      'pricing.cta': 'Obtenir le boost complet — 7 $',
+      'pricing.next.label': 'Après votre boost',
+      'pricing.next.title': 'Packs de corrections',
+      'pricing.next.p': 'Si le test trouve des problèmes, corrigez-les vous-même avec le rapport — ou achetez la correction. Le logiciel gère schema, meta et sitemaps, les spécialistes font le reste.',
+      'pricing.p1': 'Packs de corrections en un clic depuis le rapport',
+      'pricing.p2': 'Automatique : sitemap, meta, robots',
+      'pricing.p3': 'Spécialistes : contenus, fiches',
+      'pricing.p4': 'Re-boost inclus pour vérifier',
+      'pricing.next.foot': 'à partir de 97 $ · prix par pack après le scan',
+
+      'faq.title': 'Réponses directes.',
+      'faq.q1': 'Que reçois-je exactement ?',
+      'faq.a1': 'Un rapport complet à ouvrir tout de suite : un score sur 100, une note, une répartition en cinq catégories (indexabilité, on-page, technique, mobile, vitesse) et les 17 contrôles avec le constat et la correction exacte. En plus, l’inscription sur 14 moteurs.',
+      'faq.q2': 'Je ne suis pas technique, vais-je comprendre ?',
+      'faq.a2': 'C’est conçu pour ça. Chaque constat dit ce que c’est, pourquoi ça compte et quoi faire. Si une correction vous dépasse, rendez-nous le rapport et nous l’appliquons.',
+      'faq.q3': 'Serai-je n°1 sur Google demain ?',
+      'faq.a3': 'Non — et fuyez quiconque le promet. Vous obtenez l’inscription sur 14 moteurs, des pings IndexNow et chaque problème d’exploration expliqué. Le classement dépend du contenu et de la concurrence, mais sans explorabilité, rien n’est possible.',
+      'faq.q4': 'Où nous inscrivez-vous exactement ?',
+      'faq.a4': 'Canaux officiels uniquement : Google Search Console, Bing Webmaster Tools (qui alimente aussi DuckDuckGo et Yahoo), Baidu Zhanzhang, Yandex Webmaster, Naver Search Advisor, Seznam Webmaster, plus les pings IndexNow et les moteurs de niveau 3 selon votre pays et votre langue.',
+      'faq.q5': 'Fabriquez-vous des backlinks spam ?',
+      'faq.a5': 'Non — jamais. Les réseaux de liens à grande échelle violent les règles anti-spam de Google et peuvent pénaliser votre site. Votre boost, ce sont des soumissions, des pings et de l’explorabilité : du travail propre qui aide sans nuire.',
+
+      'cta.title': 'Prêt à être trouvé ?',
+      'cta.p': 'Testez votre site gratuitement. Voyez les corrections. Décidez ensuite.',
+      'cta.button': 'Tester mon site gratuitement',
+      'cta.secondary': 'Voir le boost complet',
+
+      'footer.left': '© 2026 Add My Rank — soumissions officielles uniquement, jamais de liens spam.',
+      'footer.right': 'SiteBoost 300 · tester, booster, être trouvé',
+
+      'lang.label': 'Langue',
+
+      'boost.meta.title': 'Booster mon classement — Add My Rank · SiteBoost 300',
+      'boost.meta.description': "Inscrivez votre site sur 14 moteurs et recevez le rapport complet en 17 contrôles.",
+      'boost.marketNote': '{engine} passe en tête de file — c’est le moteur principal de votre marché.',
+      'boost.step': 'SITEBOOST 300 · ÉTAPE 1 SUR 2',
+      'boost.questions': 'Des questions ?',
+      'boost.badge': '7 $ · UN PAIEMENT · SANS ABONNEMENT',
+      'boost.title': 'Booster mon classement.',
+      'boost.sub': 'Dites-nous où vous trouver. Nous inscrivons votre site sur chaque moteur nécessaire à votre marché — officiellement — et vérifions que rien ne bloque les robots.',
+      'boost.urlLabel': 'Votre site *',
+      'boost.emailLabel': 'E-mail pour le rapport *',
+      'boost.urlPlaceholder': 'https://votreentreprise.fr',
+      'boost.emailPlaceholder': 'vous@votreentreprise.fr',
+      'boost.country': 'Pays',
+      'boost.language': 'Langue',
+      'boost.medium': 'Vos clients vous trouvent via',
+      'boost.mediumWeb': '🌐 Recherche web',
+      'boost.mediumPhone': '📞 Téléphone et local',
+      'boost.mediumNote': 'Téléphone et local ajoute les vérifications de fiches locales (cartes, annuaires, profils).',
+      'boost.fleet': 'Vos moteurs',
+      'boost.selected': '{n}/14 sélectionnés',
+      'boost.summaryOneTime': 'une fois',
+      'boost.summary1': '{n} inscriptions sur des moteurs, canaux officiels',
+      'boost.summary2': 'Ping IndexNow vers tous les moteurs compatibles',
+      'boost.summary3': 'Contrôle d’explorabilité : robots, sitemap, meta',
+      'boost.summary4': 'Rapport par e-mail en quelques minutes',
+      'boost.total': 'À payer aujourd’hui',
+      'boost.pay': 'Payer 7 $ et lancer mon boost →',
+      'boost.payNote': 'Paiement par carte sécurisé via Stripe. Le scan démarre dès la validation du paiement.',
+      'boost.checkout': 'Ouverture du paiement Stripe sécurisé…',
+      'boost.verify': 'Paiement reçu — vérification puis analyse de votre site…',
+      'boost.scanning': 'Connexion à votre site…',
+      'boost.complete': 'Scan terminé — ouverture du rapport…',
+      'boost.devMode': 'Stripe n’est pas configuré localement — scan sans paiement…',
+      'boost.canceled': 'Paiement annulé — rien n’a été débité. Vos informations sont restées dans le formulaire.',
+      'boost.errUrl': 'Indiquez l’adresse de votre site pour savoir quoi scanner.',
+      'boost.errUrlShape': "Cela ne ressemble pas à une adresse web. Essayez votreentreprise.fr.",
+      'boost.errEmail': 'Indiquez l’adresse e-mail où envoyer le rapport.',
+      'boost.errNetwork': 'Fournisseur de paiement injoignable. Vérifiez votre connexion et réessayez.',
+      'boost.errCheckout': 'Le paiement n’a pas pu démarrer. Réessayez.',
+      'boost.errScanNetwork': 'Le scanner est injoignable. Vérifiez votre connexion et réessayez.',
+      'boost.errScan': 'Le scan a échoué. Vérifiez l’adresse et réessayez.',
+
+      'report.meta.title': 'Votre rapport de listing — Add My Rank',
+      'report.meta.description': "Votre rapport d'explorabilité et de soumission Add My Rank.",
+      'report.nav': 'RAPPORT DE LISTING',
+      'report.savePdf': 'Enregistrer en PDF',
+      'report.loading.title': 'Ouverture de votre rapport…',
+      'report.loading.sub': 'Récupération des résultats signés.',
+      'report.error.invalid': "Ce lien de rapport n'est pas valide.",
+      'report.error.hint': "Les liens de rapport sont signés et infalsifiables. Si celui-ci a été tronqué, relancez un scan.",
+      'report.error.cta': 'Lancer un nouveau scan — 7 $',
+      'report.badge': 'SCAN TERMINÉ ·',
+      'report.paid': 'PAIEMENT VÉRIFIÉ · $',
+      'report.h1': 'Votre rapport de listing.',
+      'report.score': 'Score',
+      'report.grade': 'Note',
+      'report.checks': 'Contrôles',
+      'report.fixable': 'À corriger',
+      'report.critical': 'Critiques',
+      'report.actions.title': 'Corrigez ceci en premier',
+      'report.actions.sub': "Classé par impact. Chaque point est réalisable dès aujourd'hui.",
+      'report.fleet.title': 'Vos moteurs',
+      'report.fleet.sub': 'Soumissions en file pour votre site.',
+      'report.fleet.fallback': 'Moteurs enregistrés avec ce scan.',
+      'report.all.title': 'Tous les contrôles',
+      'report.all.sub': "L'audit d'explorabilité complet, rien de caché.",
+      'report.upsell.title': 'Vous ne voulez pas le faire vous-même ?',
+      'report.upsell.p': 'Envoyez-nous ce rapport et nous appliquons les corrections — schema, balises meta, sitemaps et profils automatiquement, des spécialistes pour le reste. Puis nous rescannons pour le prouver.',
+      'report.upsell.cta': 'Obtenir le pack de corrections',
+      'report.fix': 'Correction :',
+      'report.issueOne': '{n} problème',
+      'report.issueMany': '{n} problèmes',
+      'report.none': 'Rien de critique — votre site est en bonne forme. Finitions optionnelles ci-dessous.',
+      'report.errNoToken': 'Aucun jeton de rapport fourni.',
+      'report.errLoad': 'Impossible de charger le rapport. Vérifiez votre connexion et rechargez.',
+      'report.band.strong': 'Solide — corrigez le reste et c’est bon',
+      'report.band.ok': 'Correct — quelques corrections suffisent',
+      'report.band.weak': 'Corrigez ceci en premier',
+      'report.effort.quick': 'Moins de 10 min',
+      'report.effort.mid': '10–30 min',
+      'report.effort.long': 'Plus long',
+      'report.done.aria': 'Marquer comme fait',
+      'report.progress': '{done} sur {total} faits',
+      'report.progress.reset': 'Réinitialiser',
+      'report.copy': 'Copier la correction',
+      'report.copied': 'Copié',
+      'report.copySummary': 'Copier le résumé',
+      'report.docTitle': 'Rapport {g} · {s}/100 · {o} — Add My Rank',
+    },
+  };
+
+  // A generated page declares its own language; the English pages are always
+  // "en" and any other preference is served by navigating to the localized
+  // page (see routeToLocale). So the page language is all this file needs.
+  var pageLocale = String(document.documentElement.getAttribute('data-locale') || '').toLowerCase();
+  if (SUPPORTED.indexOf(pageLocale) === -1) pageLocale = '';
+
+  var current = pageLocale || 'en';
+
+  function t(key, vars) {
+    var table = DICT[current] || DICT.en;
+    var value = table[key];
+    if (value === undefined) value = DICT.en[key];
+    if (value === undefined) return key;
+    if (!vars) return value;
+    return value.replace(/\{(\w+)\}/g, function (match, name) {
+      return vars[name] === undefined ? match : String(vars[name]);
+    });
+  }
+
+  function apply(root) {
+    var scope = root || document;
+    scope.querySelectorAll('[data-i18n]').forEach(function (el) {
+      el.textContent = t(el.getAttribute('data-i18n'));
+    });
+    scope.querySelectorAll('[data-i18n-html]').forEach(function (el) {
+      el.innerHTML = t(el.getAttribute('data-i18n-html'));
+    });
+    scope.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {
+      el.setAttribute('placeholder', t(el.getAttribute('data-i18n-placeholder')));
+    });
+    scope.querySelectorAll('[data-i18n-aria]').forEach(function (el) {
+      el.setAttribute('aria-label', t(el.getAttribute('data-i18n-aria')));
+    });
+
+    document.documentElement.lang = current;
+    var body = document.body;
+    // A page that knows a better title (the report: "Bericht B · 87/100 · …")
+    // registers AMR.pageTitle, so the specific title always wins.
+    var provider = window.AMR && window.AMR.pageTitle;
+    document.title = typeof provider === 'function'
+      ? provider()
+      : t((body && body.getAttribute('data-title-key')) || 'meta.title');
+    var desc = document.querySelector('meta[name="description"]');
+    if (desc) {
+      var descKey = (body && body.getAttribute('data-desc-key')) || 'meta.description';
+      desc.setAttribute('content', t(descKey));
+    }
+
+    document.querySelectorAll('[data-lang]').forEach(function (btn) {
+      var on = btn.getAttribute('data-lang') === current;
+      btn.classList.toggle('lang-on', on);
+      btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    document.dispatchEvent(new CustomEvent('amr:lang', { detail: { lang: current } }));
+  }
+
+  /** The visitor's preference: ?lang → saved choice → system language. */
+  function preferred() {
+    try {
+      var fromUrl = new URLSearchParams(location.search).get('lang');
+      if (SUPPORTED.indexOf(fromUrl) !== -1) return fromUrl;
+    } catch (err) { /* very old browser */ }
+
+    try {
+      var saved = localStorage.getItem(STORE_KEY);
+      if (SUPPORTED.indexOf(saved) !== -1) return saved;
+    } catch (err) { /* storage blocked */ }
+
+    var tags = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || 'en'];
+    for (var i = 0; i < tags.length; i += 1) {
+      var base = String(tags[i] || '').toLowerCase().split('-')[0];
+      if (SUPPORTED.indexOf(base) !== -1) return base;
+    }
+    return 'en';
+  }
+
+  /**
+   * This page in another language: swap the locale segment, keep the query
+   * (minus ?lang) and the hash — /report#t=… → /de/report#t=….
+   */
+  function localeUrl(lang) {
+    var rest = location.pathname.replace(/^\/(de|pl|fr)(?=\/|$)/i, '');
+    if (!rest || rest === '/index.html') rest = '/';
+    // No trailing slash on the language root: that is the canonical form the
+    // pages, hreflang and sitemap use, so no extra 308 hop.
+    var path = lang === 'en' ? rest : '/' + lang + (rest === '/' ? '' : rest);
+
+    var query = '';
+    try {
+      var params = new URLSearchParams(location.search);
+      params.delete('lang');
+      var kept = params.toString();
+      if (kept) query = '?' + kept;
+    } catch (err) { /* very old browser */ }
+
+    return path + query + location.hash;
+  }
+
+  function setLang(lang) {
+    if (SUPPORTED.indexOf(lang) === -1) return;
+    try { localStorage.setItem(STORE_KEY, lang); } catch (err) { /* storage blocked */ }
+    var target = localeUrl(lang);
+    if (target !== location.pathname + location.search + location.hash) location.href = target;
+  }
+
+  /**
+   * English pages hand off to the localized page, so the static translations are
+   * what actually gets served and crawled. A localized page never redirects:
+   * its URL already decides the language.
+   */
+  function routeToLocale() {
+    // One rule: the URL decides on a localized page, the preference decides on
+    // an English one. That keeps shared /de links from bouncing away.
+    if (pageLocale) return false;
+    var wanted = preferred();
+    if (wanted === current) return false;
+    location.replace(localeUrl(wanted));
+    return true;
+  }
+
+  document.addEventListener('click', function (event) {
+    var btn = event.target.closest ? event.target.closest('[data-lang]') : null;
+    if (btn) setLang(btn.getAttribute('data-lang'));
+  });
+
+  window.AMR = { t: t, apply: apply, setLang: setLang, lang: current, supported: SUPPORTED };
+
+  if (!routeToLocale()) {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function () { apply(); });
+    } else {
+      apply();
+    }
+  }
+})();

@@ -1,0 +1,8 @@
+.env*
+.env.local
+.freebuff/
+.vercel/
+.preview-server.log
+PLAN.md
+dev-server.js
+preview-*.png
