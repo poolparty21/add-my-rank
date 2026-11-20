@@ -80,6 +80,8 @@ const API = new Map([
   ['/api/report', './api/report.js'],
   ['/api/checkout', './api/checkout.js'],
   ['/api/preview', './api/preview.js'],
+  ['/api/event', './api/event.js'],
+  ['/api/recover', './api/recover.js'],
   ['/api/stripe-webhook', './api/stripe-webhook.js'],
   ['/api/orders', './api/orders.js'],
 ]);

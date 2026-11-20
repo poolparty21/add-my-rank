@@ -69,6 +69,17 @@
     <p class="mt-4 font-bold text-slate-900 text-lg" id="error-msg" data-i18n="report.error.invalid">This report link is not valid.</p>
     <p class="mt-2 text-sm text-slate-600" data-i18n="report.error.hint">Report links are signed and tamper-proof. If this one was cut off, run a fresh scan.</p>
     <a href="/boost.html" data-i18n="report.error.cta" class="inline-block mt-6 bg-gradient-to-r from-indigo-600 to-fuchsia-600 hover:opacity-90 text-white font-bold px-7 py-3.5 rounded-2xl">Run a new scan — $7</a>
+
+    <div id="recover" class="mt-8 border-t border-rose-200 pt-6 text-left">
+      <p class="font-bold text-slate-900" data-i18n="report.recover.title">Recover your report</p>
+      <p class="mt-1 text-sm text-slate-600">Use the email and website from your paid order.</p>
+      <div class="mt-3 grid gap-2">
+        <input id="recover-email" type="email" placeholder="you@yourbusiness.com" data-i18n-placeholder="boost.emailPlaceholder" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm" />
+        <input id="recover-url" type="url" placeholder="yourbusiness.com" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm" />
+        <button type="button" onclick="recoverReport()" data-i18n="report.recover.button" class="bg-gradient-to-r from-indigo-600 to-fuchsia-600 hover:opacity-90 text-white font-bold py-2.5 rounded-xl">Recover report</button>
+      </div>
+      <p id="recover-status" class="mt-2 text-sm text-slate-600"></p>
+    </div>
   </div>
 </div>
 
@@ -187,6 +198,18 @@
 (function () {
   const $ = (id) => document.getElementById(id);
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  function track(event, props) {
+    try { console.debug('[amr:funnel]', event, props || {}); } catch (_) {}
+    try {
+      const payload = JSON.stringify({ event, props: props || {} });
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon('/api/event', new Blob([payload], { type: 'application/json' }));
+      } else {
+        fetch('/api/event', { method: 'POST', headers: { 'content-type': 'application/json' }, body: payload, keepalive: true }).catch(() => {});
+      }
+    } catch (_) {}
+  }
 
   const T = (k, v) => (window.AMR ? window.AMR.t(k, v) : k);
 
@@ -489,6 +512,34 @@
     copyText(btn.getAttribute('data-copy') || '', btn, T('report.copied'));
   });
 
+  async function recoverReport() {
+    const status = $('recover-status');
+    const email = $('recover-email').value.trim();
+    const url = $('recover-url').value.trim();
+    track('report_recovery_started');
+    status.textContent = T('boost.scanning');
+    try {
+      const res = await fetch('/api/recover', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ email, url }),
+      });
+      const data = await res.json().catch(() => ({ ok: false, error: T('boost.errScan') }));
+      if (!data.ok) {
+        track('report_recovery_failed', { outcome: 'error' });
+        status.textContent = data.error || T('report.recover.notFound');
+        return;
+      }
+      track('report_recovery_completed', { grade: data.grade, issues: data.summary.issues, checks: data.summary.checks });
+      status.textContent = T('report.recover.success');
+      window.location.href = 'report.html#t=' + encodeURIComponent(data.token);
+    } catch (err) {
+      track('report_recovery_failed', { outcome: 'network' });
+      status.textContent = T('boost.errScanNetwork');
+    }
+  }
+  window.recoverReport = recoverReport;
+
   async function load() {
     let token = '';
     try { token = new URLSearchParams(location.search).get('t') || ''; } catch (_) {}
@@ -498,9 +549,14 @@
     try {
       const res = await fetch('/api/report?t=' + encodeURIComponent(token), { headers: { accept: 'application/json' } });
       const data = await res.json();
-      if (!data.ok) return showError(data.error || T('report.error.invalid'));
+      if (!data.ok) {
+        track('report_load_failed', { outcome: 'error' });
+        return showError(data.error || T('report.error.invalid'));
+      }
       render(data.report);
+      track('report_opened', { grade: data.report.grade, issues: data.report.summary.issues, checks: data.report.summary.checks });
     } catch (err) {
+      track('report_load_failed', { outcome: 'network' });
       showError(T('report.errLoad'));
     }
   }

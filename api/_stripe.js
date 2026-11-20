@@ -249,12 +249,57 @@ async function recordPaidOrder(session) {
 
 /** Mark the order behind a paid session as delivered (report generated). */
 async function markOrderFulfilled(sessionId) {
-  await stripeRequest(sessionPath(sessionId), {
+  const current = await retrieveSession(sessionId);
+  const meta = (current && current.metadata) || {};
+  // Idempotent: a session that is already fulfilled stays fulfilled; we do not
+  // rewrite its metadata or its fulfilled_at timestamp on every repeat scan.
+  if (meta.order_status === 'fulfilled' && meta.order_fulfilled_at) {
+    return { fulfilled: false, reason: 'already-fulfilled' };
+  }
+  await stripeRequest(sessionPath(current.id), {
     metadata: {
       order_status: 'fulfilled',
       order_fulfilled_at: new Date().toISOString(),
     },
   }, { errorMessage: 'We could not update that order. Please try again.' });
+  return { fulfilled: true, reason: 'fulfilled' };
+}
+
+function normalizeOrigin(value) {
+  const raw = String(value || '').trim();
+  if (!raw) return '';
+  try {
+    const url = new URL(raw.includes('://') ? raw : 'https://' + raw);
+    return (url.origin || '').toLowerCase().replace(/\/$/, '');
+  } catch (_) {
+    return raw.toLowerCase().replace(/\/$/, '');
+  }
+}
+
+/**
+ * Find the most recent paid Checkout Session for an email + site, so a lost
+ * report link can be regenerated without rescanning the payment. Returns the
+ * session object or null.
+ */
+async function findPaidOrder(email, siteUrl) {
+  const normalizedEmail = String(email || '').trim().toLowerCase();
+  const targetOrigin = normalizeOrigin(siteUrl);
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(normalizedEmail) || !targetOrigin) return null;
+
+  const data = await stripeRequest(
+    `/checkout/sessions?limit=100&customer_details%5Bemail%5D=${encodeURIComponent(normalizedEmail)}`,
+    null,
+    { errorMessage: 'We could not look up that order right now. Please try again in a moment.' },
+  );
+
+  const sessions = (data && data.data ? data.data : [])
+    .filter((session) => session && session.payment_status === 'paid')
+    .map((session) => ({ session, order: orderFromSession(session) }))
+    .filter(({ order }) => normalizeOrigin(order.url) === targetOrigin);
+
+  if (!sessions.length) return null;
+  sessions.sort((a, b) => Number(b.session.created || 0) - Number(a.session.created || 0));
+  return sessions[0].session;
 }
 
 /** Paid sessions, newest first, with their order state — the abandoned-order list. */
@@ -329,5 +374,6 @@ module.exports = {
   verifyWebhookSignature,
   recordPaidOrder,
   markOrderFulfilled,
+  findPaidOrder,
   listOrders,
 };

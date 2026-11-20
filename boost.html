@@ -328,6 +328,19 @@
   const $ = (id) => document.getElementById(id);
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
+  /** Privacy-friendly funnel ping: event name + a few non-identifying counts only. */
+  function track(event, props) {
+    try { console.debug('[amr:funnel]', event, props || {}); } catch (_) {}
+    try {
+      const payload = JSON.stringify({ event, props: props || {} });
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon('/api/event', new Blob([payload], { type: 'application/json' }));
+      } else {
+        fetch('/api/event', { method: 'POST', headers: { 'content-type': 'application/json' }, body: payload, keepalive: true }).catch(() => {});
+      }
+    } catch (_) {}
+  }
+
   function setBusy(busy, text) {
     $('pay-btn').disabled = busy;
     $('scan-status').classList.toggle('hidden', !busy);
@@ -370,13 +383,16 @@
     try {
       result = await postJson('/api/scan', payload);
     } catch (err) {
+      track('scan_failed', { outcome: 'network' });
       showScanError(T('boost.errScanNetwork'));
       return;
     }
     if (!result.data.ok) {
+      track('scan_failed', { outcome: 'error' });
       showScanError(result.data.error || T('boost.errScan'));
       return;
     }
+    track('scan_completed', { grade: result.data.grade, issues: result.data.summary.issues, checks: result.data.summary.checks });
     setBusy(true, T('boost.complete'));
     // relative, so a localized boost page opens the localized report
     window.location.href = 'report.html#t=' + encodeURIComponent(result.data.token);
@@ -408,19 +424,23 @@
     if (!order.url) return fieldError('inp-url', T('boost.errUrl'));
     if (!looksLikeUrl(order.url)) return fieldError('inp-url', T('boost.errUrlShape'));
 
+    track('preview_started');
     setBusy(true, T('boost.scanning'));
     let result;
     try {
       result = await postJson('/api/scan', { ...order, preview: true });
     } catch (err) {
+      track('preview_failed', { outcome: 'network' });
       showScanError(T('boost.errScanNetwork'));
       return;
     }
     setBusy(false);
     if (!result.data || !result.data.ok) {
+      track('preview_failed', { outcome: 'error' });
       showScanError((result.data && result.data.error) || T('boost.errScan'));
       return;
     }
+    track('preview_completed', { grade: result.data.grade, issues: result.data.summary.issues, checks: result.data.summary.checks, hasFix: !!result.data.fixSnippet });
     renderPreview(result.data);
   }
   window.runPreview = runPreview;
@@ -474,24 +494,29 @@
       return fieldError('inp-email', T('boost.errEmail'));
     }
 
+    track('checkout_started');
     setBusy(true, T('boost.checkout'));
     let result;
     try {
       result = await postJson('/api/checkout', order);
     } catch (err) {
+      track('checkout_failed', { outcome: 'network' });
       showScanError(T('boost.errNetwork'));
       return;
     }
 
     // Local development without Stripe keys: keep the pipeline testable, unpaid.
     if (result.status === 503 && result.data.devMode) {
+      track('checkout_dev_mode');
       runScan(order, T('boost.devMode'));
       return;
     }
     if (!result.data.ok || !result.data.url) {
+      track('checkout_failed', { outcome: 'error' });
       showScanError(result.data.error || T('boost.errCheckout'));
       return;
     }
+    track('checkout_redirect');
     window.location.href = result.data.url;
   }
   window.startCheckout = startCheckout;
@@ -505,6 +530,7 @@
     }
     const sessionId = params.get('session_id');
     if (!sessionId) return;
+    track('payment_verification_started', { source: 'stripe' });
     runScan({ sessionId }, T('boost.verify'));
   }
 

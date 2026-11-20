@@ -24,10 +24,11 @@ const MAX_IMAGE_PROBES = 12;
 
 /** Thrown for problems we can explain to the customer. */
 class ScanError extends Error {
-  constructor(message, status = 400) {
+  constructor(message, status = 400, code = '') {
     super(message);
     this.name = 'ScanError';
     this.status = status;
+    this.code = code;
   }
 }
 
@@ -654,7 +655,11 @@ function verifyToken(token) {
   const a = Buffer.from(sig);
   const b = Buffer.from(expected);
   if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) throw new ScanError('This report link is not valid.', 400);
-  return JSON.parse(Buffer.from(payload, 'base64url').toString('utf8'));
+  const report = JSON.parse(Buffer.from(payload, 'base64url').toString('utf8'));
+  if (report && report.expiresAt && Number(report.expiresAt) < Date.now()) {
+    throw new ScanError('This report link has expired. Recover it below using your email and website.', 410, 'report_expired');
+  }
+  return report;
 }
 
 // ---------------------------------------------------------------------------

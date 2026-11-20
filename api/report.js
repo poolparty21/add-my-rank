@@ -28,8 +28,8 @@ module.exports = async function handler(req, res) {
     const report = verifyToken(token);
     return json(res, 200, { ok: true, report });
   } catch (err) {
-    if (err instanceof ScanError) return json(res, err.status || 400, { ok: false, error: err.message });
+    if (err instanceof ScanError) return json(res, err.status || 400, { ok: false, code: err.code || '', error: err.message });
     console.error('report failed', err);
-    return json(res, 400, { ok: false, error: 'This report link is not valid.' });
+    return json(res, 400, { ok: false, code: 'report_invalid', error: 'This report link is not valid.' });
   }
 };

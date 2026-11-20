@@ -190,6 +190,8 @@ module.exports = async function handler(req, res) {
     };
     report.payment = payment;
     report.id = crypto.createHash('sha256').update(report.target.url + report.scannedAt).digest('hex').slice(0, 12);
+    // Report links are signed and expire; recovery regenerates them from Stripe.
+    report.expiresAt = Date.now() + (30 * 24 * 60 * 60 * 1000);
 
     // A report now exists for this order, so the webhook record can stop
     // looking abandoned. Best effort: a failure here must not cost the
