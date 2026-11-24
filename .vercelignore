@@ -3,6 +3,8 @@
 .freebuff/
 .vercel/
 .preview-server.log
+.dev.log
 PLAN.md
+test/
 dev-server.js
 preview-*.png

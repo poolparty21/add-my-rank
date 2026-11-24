@@ -4,6 +4,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const { EventEmitter } = require('node:events');
 const { spawnSync } = require('node:child_process');
+const fs = require('node:fs');
 const path = require('node:path');
 
 const ROOT = path.resolve(__dirname, '..');
@@ -97,6 +98,35 @@ test('signed report tokens verify, reject tampering, and expire', () => {
 
   const expiredToken = signToken({ score: 87, expiresAt: Date.now() - 1000 });
   assert.throws(() => verifyToken(expiredToken), (err) => err.status === 410 && err.code === 'report_expired');
+});
+
+test('generated pages expose canonical, social, structured, and analytics metadata', () => {
+  const read = (rel) => fs.readFileSync(path.join(ROOT, rel), 'utf8');
+
+  const index = read('index.html');
+  assert.match(index, /<link rel="canonical" href="https:\/\/add-my-rank\.vercel\.app\/">/);
+  assert.match(index, /<meta property="og:image" content="https:\/\/add-my-rank\.vercel\.app\/og-image\.png">/);
+  assert.match(index, /"@type":"Organization"/);
+  assert.match(index, /\/analytics\.js/);
+
+  const deBoost = read('de/boost.html');
+  assert.match(deBoost, /<link rel="canonical" href="https:\/\/add-my-rank\.vercel\.app\/de\/boost">/);
+  assert.match(deBoost, /<meta property="og:url" content="https:\/\/add-my-rank\.vercel\.app\/de\/boost">/);
+  assert.match(deBoost, /"@type":"Service"/);
+  assert.match(deBoost, /"url":"https:\/\/add-my-rank\.vercel\.app\/de\/boost"/);
+  assert.doesNotMatch(deBoost, /Boost my rank — Add My Rank/);
+
+  const report = read('report.html');
+  assert.match(report, /<meta name="robots" content="noindex, nofollow">/);
+  assert.match(report, /\/analytics\.js/);
+
+  assert.match(read('404.html'), /noindex/);
+});
+
+test('sitemap excludes signed report pages', () => {
+  const sitemap = fs.readFileSync(path.join(ROOT, 'sitemap.xml'), 'utf8');
+  assert.equal((sitemap.match(/<url>/g) || []).length, 8);
+  assert.doesNotMatch(sitemap, /\/report/);
 });
 
 test('build-locales check passes', () => {

@@ -128,6 +128,49 @@ function rewriteLinks(html, lang) {
     .replace(/href="\/boost\.html"/g, 'href="/' + lang + '/boost"');
 }
 
+/** Language-aware JSON-LD so crawlers get the same entity on every locale. */
+function structuredData(lang, page, t) {
+  if (page.kind === 'report') return '';
+  const graph = [
+    {
+      '@type': 'Organization',
+      '@id': ORIGIN + '/#organization',
+      name: 'Add My Rank',
+      url: ORIGIN + '/',
+      logo: ORIGIN + '/favicon.svg',
+    },
+    {
+      '@type': 'WebSite',
+      '@id': ORIGIN + '/#website',
+      url: urlFor(lang, 'index'),
+      name: 'Add My Rank',
+      description: t('meta.description'),
+      inLanguage: lang,
+      publisher: { '@id': ORIGIN + '/#organization' },
+    },
+  ];
+  if (page.kind === 'boost') {
+    graph.push({
+      '@type': 'Service',
+      '@id': urlFor(lang, 'boost') + '#service',
+      name: 'SiteBoost 300',
+      serviceType: 'Search engine submission and crawlability report',
+      description: t('boost.meta.description'),
+      provider: { '@id': ORIGIN + '/#organization' },
+      areaServed: 'Worldwide',
+      offers: {
+        '@type': 'Offer',
+        price: '7.00',
+        priceCurrency: 'USD',
+        url: urlFor(lang, 'boost'),
+        availability: 'https://schema.org/InStock',
+      },
+    });
+  }
+  const json = JSON.stringify({ '@context': 'https://schema.org', '@graph': graph }).replace(/</g, '\\u003c');
+  return '<script type="application/ld+json">' + json + '</script>';
+}
+
 function applyHead(html, lang, page, t) {
   const block = headBlock(lang, page.kind);
   // Strip every previous block first, then insert exactly one: replacing in
@@ -150,6 +193,19 @@ function applyHead(html, lang, page, t) {
     (m, a, _old, c) => a + t(page.titleKey).replace(/"/g, '&quot;') + c);
   out = out.replace(/(<meta property="og:description" content=")([^"]*)(")/,
     (m, a, _old, c) => a + t(page.descKey).replace(/"/g, '&quot;') + c);
+  out = out.replace(/(<meta name="twitter:title" content=")([^"]*)(")/,
+    (m, a, _old, c) => a + t(page.titleKey).replace(/"/g, '&quot;') + c);
+  out = out.replace(/(<meta name="twitter:description" content=")([^"]*)(")/,
+    (m, a, _old, c) => a + t(page.descKey).replace(/"/g, '&quot;') + c);
+  out = out.replace(/(<meta property="og:url" content=")([^"]*)(")/,
+    (m, a, _old, c) => a + urlFor(lang, page.kind) + c);
+  // Generated pages no longer contain the placeholder, so strip the previous
+  // JSON-LD block before adding the locale's version. Otherwise a localized
+  // page would inherit the English block from the generated English page.
+  out = out.replace(/<!-- structured-data -->\n?/g, '');
+  out = out.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>\n?/g, '');
+  const data = structuredData(lang, page, t);
+  if (data) out = out.replace('</head>', data + '\n</head>');
   return out;
 }
 
