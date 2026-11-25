@@ -421,6 +421,34 @@ test('robots.txt AI crawler access follows the specific group, then *', () => {
   assert.ok(aiCrawlerAccess(allBlocked).every((a) => !a.allowed));
 });
 
+test('consecutive User-agent lines share one robots.txt group', () => {
+  const { parseRobots, aiCrawlerAccess } = require('../api/_lib.js');
+
+  const robots = parseRobots([
+    'User-agent: GPTBot',
+    'User-agent: ClaudeBot',
+    'User-agent: PerplexityBot',
+    'Disallow: /',
+  ].join('\n'));
+
+  assert.equal(robots.groups.length, 1, 'three User-agent lines before a rule are one group');
+  assert.deepEqual(robots.groups[0].agents, ['gptbot', 'claudebot', 'perplexitybot']);
+
+  const byAgent = Object.fromEntries(aiCrawlerAccess(robots).map((a) => [a.agent, a.allowed]));
+  assert.equal(byAgent.GPTBot, false, 'the shared Disallow applies to the first agent too');
+  assert.equal(byAgent.ClaudeBot, false);
+  assert.equal(byAgent.PerplexityBot, false);
+  assert.equal(byAgent['ChatGPT-User'], true, 'a crawler outside the group still follows *');
+
+  // A User-agent line after a rule line still opens a separate group.
+  const split = parseRobots([
+    'User-agent: GPTBot', 'Disallow: /',
+    'User-agent: ClaudeBot', 'Disallow: /private',
+  ].join('\n'));
+  assert.equal(split.groups.length, 2);
+  assert.equal(aiCrawlerAccess(split)[0].allowed, false);
+});
+
 test('a scan reports robots.txt rules that block AI crawlers', async () => {
   const dns = require('node:dns').promises;
   const realLookup = dns.lookup;

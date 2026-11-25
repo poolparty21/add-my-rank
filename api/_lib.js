@@ -287,6 +287,9 @@ function finding(id, category, severity, title, detail, fix) {
 function parseRobots(txt) {
   const groups = [];
   let current = null;
+  // A group opens with one or more User-agent lines and closes at the first
+  // rule line, so consecutive agents share the same rules (RFC 9309).
+  let currentHasRules = false;
   const sitemaps = [];
   let crawlDelay = null;
   for (const rawLine of txt.split(/\r?\n/)) {
@@ -298,11 +301,22 @@ function parseRobots(txt) {
     const value = line.slice(idx + 1).trim();
     if (field === 'sitemap') sitemaps.push(value);
     else if (field === 'user-agent') {
-      current = { agents: [value.toLowerCase()], disallow: [], allow: [] };
-      groups.push(current);
-    } else if (field === 'disallow' && current) current.disallow.push(value);
-    else if (field === 'allow' && current) current.allow.push(value);
-    else if (field === 'crawl-delay' && current) crawlDelay = Number(value) || null;
+      if (!current || currentHasRules) {
+        current = { agents: [], disallow: [], allow: [] };
+        groups.push(current);
+        currentHasRules = false;
+      }
+      current.agents.push(value.toLowerCase());
+    } else if (field === 'disallow' && current) {
+      current.disallow.push(value);
+      currentHasRules = true;
+    } else if (field === 'allow' && current) {
+      current.allow.push(value);
+      currentHasRules = true;
+    } else if (field === 'crawl-delay' && current) {
+      crawlDelay = Number(value) || null;
+      currentHasRules = true;
+    }
   }
   return { groups, sitemaps, crawlDelay };
 }
