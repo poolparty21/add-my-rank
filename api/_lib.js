@@ -272,7 +272,7 @@ function extractHtml(html) {
 const PENALTY = { critical: 38, high: 15, medium: 6, low: 2 };
 const CATEGORY_WEIGHT = { indexability: 30, onpage: 25, technical: 20, mobile: 15, performance: 10 };
 const EFFORT = {
-  noindex: '1 min', robots_missing: '2 min', robots_blocked: '5 min', sitemap_missing: '5 min',
+  noindex: '1 min', robots_missing: '2 min', robots_blocked: '5 min', ai_crawlers: '2 min', sitemap_missing: '5 min',
   sitemap_empty: '10 min', https: '20 min', viewport: '2 min', title_missing: '5 min',
   title_length: '2 min', desc_missing: '5 min', desc_length: '3 min', canonical: '5 min',
   lang: '2 min', images_heavy: '15 min', images_alt: '20 min', images_dims: '20 min',
@@ -305,6 +305,34 @@ function parseRobots(txt) {
     else if (field === 'crawl-delay' && current) crawlDelay = Number(value) || null;
   }
   return { groups, sitemaps, crawlDelay };
+}
+
+/**
+ * The AI crawlers whose access decides whether assistants can read a page.
+ * Blocking one means that assistant cannot fetch the page to answer questions
+ * about it or cite it, however good the content is.
+ */
+const AI_CRAWLERS = [
+  { agent: 'GPTBot', label: 'GPTBot (OpenAI)' },
+  { agent: 'OAI-SearchBot', label: 'OAI-SearchBot (ChatGPT search)' },
+  { agent: 'ChatGPT-User', label: 'ChatGPT-User (ChatGPT browsing)' },
+  { agent: 'ClaudeBot', label: 'ClaudeBot (Anthropic)' },
+  { agent: 'PerplexityBot', label: 'PerplexityBot (Perplexity)' },
+  { agent: 'Google-Extended', label: 'Google-Extended (Gemini)' },
+];
+
+/**
+ * Which AI crawlers a robots.txt lets reach a path. A crawler-specific group
+ * wins over the "*" group, exactly as the crawlers themselves read robots.txt.
+ */
+function aiCrawlerAccess(robots, path = '/') {
+  const star = robots.groups.filter((g) => g.agents.includes('*'));
+  return AI_CRAWLERS.map((crawler) => {
+    const token = crawler.agent.toLowerCase();
+    const named = robots.groups.filter((g) => g.agents.some((a) => a !== '*' && a === token));
+    const groups = named.length ? named : star;
+    return { agent: crawler.agent, label: crawler.label, allowed: groups.every((g) => robotsAllows(g, path)) };
+  });
 }
 
 /** robots.txt path matching with * and $ wildcards. */
@@ -405,6 +433,27 @@ async function runScan(targetUrl) {
     if (!(err instanceof ScanError)) throw err;
     findings.push(finding('robots_missing', 'indexability', 'medium', 'robots.txt could not be fetched',
       err.message, 'Publish a robots.txt at the root of your domain.'));
+  }
+
+  // 3b. AI crawlers. Search engines are only half the story now: assistants
+  // answer from the same pages, if robots.txt lets them fetch it.
+  if (robots) {
+    const aiAccess = aiCrawlerAccess(robots);
+    const blocked = aiAccess.filter((a) => !a.allowed);
+    if (blocked.length) {
+      findings.push(finding('ai_crawlers', 'indexability', blocked.length === aiAccess.length ? 'high' : 'medium',
+        `${blocked.length} of ${aiAccess.length} AI crawlers blocked`,
+        `Your robots.txt blocks ${blocked.map((a) => a.label).join(', ')}. Those assistants cannot fetch the page to answer questions about it or cite you, no matter how good the content is.`,
+        'Remove the Disallow rule under those User-agent groups (or add Allow: /) so AI assistants can read your pages.'));
+    } else {
+      findings.push(finding('ai_crawlers', 'indexability', 'pass', 'AI crawlers can read this site',
+        `robots.txt does not block GPTBot, ClaudeBot, PerplexityBot or the other AI crawlers we check, so assistants can fetch your pages and cite them.`,
+        'Nothing to do.'));
+    }
+  } else {
+    findings.push(finding('ai_crawlers', 'indexability', 'pass', 'No robots.txt rule blocks AI crawlers',
+      'GPTBot, ClaudeBot, PerplexityBot and the other AI crawlers are not told to stay out, because there is no robots.txt to tell them.',
+      'Publish a robots.txt that allows crawling, so you decide which AI crawlers may read your pages.'));
   }
 
   // 4. sitemaps (root sitemap.xml plus any declared in robots.txt).
@@ -745,5 +794,6 @@ function enginePlan({ country, language, medium }) {
 
 module.exports = {
   ScanError, safeFetch, assertSafeUrl, isBlockedIp, runScan, signToken, verifyToken, enginePlan, ALL_ENGINES, UA,
+  parseRobots, aiCrawlerAccess, AI_CRAWLERS,
   json, readBody, MAX_URL_LENGTH,
 };

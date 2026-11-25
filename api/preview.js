@@ -6,7 +6,7 @@
  *
  * This is a TEASER, on purpose:
  * - it runs the real crawler (no mock data, no invented score), but
- * - it returns no signed token and no full check list, so the 17-check report
+ * - it returns no signed token and no full check list, so the 18-check report
  *   with ranked fixes and the 14 engine submissions stay behind the $7 gate.
  *
  * It is the only endpoint that scans without payment, so it is rate limited per

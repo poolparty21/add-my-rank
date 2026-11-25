@@ -22,7 +22,7 @@ const API_VERSION = '2026-08-26.dahlia';
 const PRICE_CENTS = 700;
 const CURRENCY = 'usd';
 const PRODUCT_NAME = 'SiteBoost 300 — 14-engine listing + crawlability report';
-const PRODUCT_DESCRIPTION = '17-point crawlability audit, signed listing report and submission to 14 search engines.';
+const PRODUCT_DESCRIPTION = '18-point crawlability audit, signed listing report and submission to 14 search engines.';
 const INTEGRATION_IDENTIFIER = 'addmyrank_boost_x7k2mqzt';
 /**
  * Stripe requires an eligible tax code on every product when the account has

@@ -400,6 +400,78 @@ test('a non-2xx final response fails the scan instead of scoring the error page'
   }
 });
 
+test('robots.txt AI crawler access follows the specific group, then *', () => {
+  const { parseRobots, aiCrawlerAccess } = require('../api/_lib.js');
+
+  const robots = parseRobots([
+    'User-agent: *', 'Allow: /', '',
+    'User-agent: GPTBot', 'Disallow: /', '',
+    'User-agent: ClaudeBot', 'Disallow: /private', '',
+    'User-agent: PerplexityBot', 'Disallow: /', '',
+  ].join('\n'));
+
+  const access = aiCrawlerAccess(robots);
+  const byAgent = Object.fromEntries(access.map((a) => [a.agent, a.allowed]));
+  assert.equal(byAgent.GPTBot, false);
+  assert.equal(byAgent.PerplexityBot, false);
+  assert.equal(byAgent.ClaudeBot, true, 'a Disallow that does not cover the homepage must not count as blocked');
+  assert.equal(byAgent['ChatGPT-User'], true, 'crawlers without their own group follow *');
+
+  const allBlocked = parseRobots('User-agent: *\nDisallow: /\n');
+  assert.ok(aiCrawlerAccess(allBlocked).every((a) => !a.allowed));
+});
+
+test('a scan reports robots.txt rules that block AI crawlers', async () => {
+  const dns = require('node:dns').promises;
+  const realLookup = dns.lookup;
+  const realFetch = global.fetch;
+
+  dns.lookup = async () => [{ address: '93.184.216.34', family: 4 }];
+  const robotsText = [
+    'User-agent: *', 'Allow: /', '',
+    'User-agent: GPTBot', 'Disallow: /', '',
+    'User-agent: ClaudeBot', 'Disallow: /', '',
+  ].join('\n');
+
+  global.fetch = async (url) => {
+    const pathname = new URL(String(url)).pathname;
+    if (pathname === '/robots.txt') {
+      return new Response(robotsText, { status: 200, headers: { 'content-type': 'text/plain' } });
+    }
+    if (pathname === '/sitemap.xml') {
+      return new Response(
+        '<?xml version="1.0" encoding="UTF-8"?><urlset><url><loc>https://example.com/</loc><lastmod>2026-11-01</lastmod></url></urlset>',
+        { status: 200, headers: { 'content-type': 'application/xml' } }
+      );
+    }
+    return new Response(
+      '<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Example site home page</title>' +
+      '<meta name="description" content="A description long enough to sit comfortably inside a search result snippet without being cut off.">' +
+      '<link rel="canonical" href="https://example.com/"><meta name="viewport" content="width=device-width, initial-scale=1">' +
+      '</head><body><h1>Hello</h1></body></html>',
+      { status: 200, headers: { 'content-type': 'text/html' } }
+    );
+  };
+
+  try {
+    const { runScan } = require('../api/_lib.js');
+    const report = await runScan('https://example.com/');
+    const checks = report.checks.filter((f) => f.id === 'ai_crawlers');
+    assert.equal(checks.length, 1, 'the report must carry exactly one AI crawler check');
+
+    const check = checks[0];
+    assert.equal(check.category, 'indexability');
+    assert.equal(check.severity, 'medium', 'blocking some assistants is a fixable visibility issue, not a site-wide block');
+    assert.match(check.title, /2 of 6 AI crawlers blocked/);
+    assert.match(check.detail, /GPTBot/);
+    assert.match(check.detail, /ClaudeBot/);
+    assert.doesNotMatch(check.detail, /PerplexityBot/, 'allowed crawlers must not be reported as blocked');
+  } finally {
+    dns.lookup = realLookup;
+    global.fetch = realFetch;
+  }
+});
+
 test('build-locales check passes', () => {
   const result = spawnSync(process.execPath, ['build-locales.js', '--check'], {
     cwd: ROOT,
