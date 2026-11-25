@@ -247,6 +247,13 @@ async function recordPaidOrder(session) {
   return { recorded: true, reason: 'recorded', order };
 }
 
+/** Write metadata onto a Checkout Session — the order record for name:value pairs such as the email claim. */
+async function stampSession(sessionId, metadata) {
+  return stripeRequest(sessionPath(sessionId), { metadata }, {
+    errorMessage: 'We could not update that order. Please try again.',
+  });
+}
+
 /** Mark the order behind a paid session as delivered (report generated). */
 async function markOrderFulfilled(sessionId) {
   const current = await retrieveSession(sessionId);
@@ -373,6 +380,7 @@ module.exports = {
   assertPaidSession,
   verifyWebhookSignature,
   recordPaidOrder,
+  stampSession,
   markOrderFulfilled,
   findPaidOrder,
   listOrders,

@@ -5,19 +5,20 @@
  * `checkout.session.async_payment_succeeded` and `…async_payment_failed` here.
  * The signature is verified against the raw body before anything is read.
  *
- * The scan itself is fulfilled when the customer returns to /boost with their
- * session id (verified against Stripe in /api/scan). There is no database in
- * v1, so this handler's job is to make paid-but-abandoned orders recoverable:
- * every paid session is logged with its order, site and email, so an operator
- * can finish any order the browser never completed. Wiring these events to a
- * durable order record and an emailed report is the next required step before
- * real volume.
+ * Fulfillment happens here, not in the browser: after recording the order this
+ * handler scans the paid site, mints the signed report and emails the buyer
+ * their link, so an order is delivered even if the tab is closed before the
+ * redirect completes. Delivery is idempotent on the session metadata (see
+ * api/_fulfill.js), so Stripe redeliveries never mail the same order twice.
+ * /api/scan still serves the report on the customer's return, and /api/recover
+ * remains the manual fallback.
  *
  * Configure the endpoint in Stripe → Developers → Webhooks with
  * STRIPE_WEBHOOK_SECRET set to the signing secret.
  */
 
 const { verifyWebhookSignature, recordPaidOrder, StripeError } = require('./_stripe.js');
+const { deliverReportEmail } = require('./_fulfill.js');
 
 const MAX_BODY_BYTES = 1024 * 1024;
 
@@ -91,6 +92,24 @@ module.exports = async function handler(req, res) {
         currency: session.currency,
         recorded: record.recorded,
         reason: record.reason,
+      }));
+
+      // Deliver the report now. A failure fails the delivery on purpose so
+      // Stripe retries: a paid order with no email is exactly what this handler
+      // exists to prevent, and the claim in _fulfill.js keeps the retry safe.
+      let delivery;
+      try {
+        delivery = await deliverReportEmail(session.id);
+      } catch (err) {
+        console.error('stripe webhook could not email report', session.id, err && err.message);
+        return json(res, 500, { ok: false, error: 'Could not email the report.' });
+      }
+      console.log('stripe report email', JSON.stringify({
+        session: session.id,
+        sent: delivery.sent,
+        reason: delivery.reason,
+        report: delivery.reportId || null,
+        emailId: delivery.emailId || null,
       }));
     }
   } else if (event.type === 'checkout.session.async_payment_failed') {

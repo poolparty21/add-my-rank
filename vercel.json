@@ -3,6 +3,9 @@
   "framework": null,
   "buildCommand": "node build-locales.js --warn && rm -f build-locales.js",
   "outputDirectory": ".",
+  "functions": {
+    "api/stripe-webhook.js": { "maxDuration": 60 }
+  },
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [

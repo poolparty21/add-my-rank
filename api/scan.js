@@ -14,7 +14,9 @@
  *   development allows an unpaid scan so the pipeline stays testable.
  *
  * The report token returned here is signed and carries the report itself, so
- * there is no storage to keep: /api/report just verifies the signature.
+ * /api/report just verifies the signature. The token is cached per order in the
+ * report store (api/_store.js) so a buyer who was already emailed their report
+ * sees that same report here instead of triggering a second crawl.
  */
 
 const crypto = require('node:crypto');
@@ -23,6 +25,7 @@ const {
   StripeError, PRICE_CENTS, isConfigured, isProduction, retrieveSession, assertPaidSession, orderFromSession,
   markOrderFulfilled,
 } = require('./_stripe.js');
+const { deliverReportEmail, loadStoredReport, saveReport } = require('./_fulfill.js');
 
 const SESSION_ID = /^cs_(test|live)_[A-Za-z0-9_]{8,200}$/;
 
@@ -82,6 +85,7 @@ async function resolveOrder(body) {
 
     return {
       order,
+      session,
       payment: {
         verified: true,
         skipped: false,
@@ -171,7 +175,7 @@ module.exports = async function handler(req, res) {
 
     // Free preview: a real scan, but only the score, the top three issues and
     // one copy-pasteable fix are returned. The full report stays behind payment.
-    let order, payment;
+    let order, payment, session;
     if (body.preview) {
       const rawUrl = String(body.url || '').trim();
       if (!rawUrl) throw new ScanError('Please enter your website address.');
@@ -187,28 +191,48 @@ module.exports = async function handler(req, res) {
       };
       payment = { verified: false, preview: true, amount: 0 };
     } else {
-      ({ order, payment } = await resolveOrder(body));
+      ({ order, payment, session } = await resolveOrder(body));
     }
 
-    const report = await runScan(order.url);
-    const plan = enginePlan({
-      country: order.country,
-      language: order.language,
-      medium: order.medium,
-    });
-    report.engineNotes = plan.notes;
-    report.engineFleet = plan.engines;
-    report.enginePrimary = plan.primary;
-    report.customer = {
-      email: order.email || null,
-      country: order.country,
-      language: order.language,
-      medium: order.medium,
-    };
-    report.payment = payment;
-    report.id = crypto.createHash('sha256').update(report.target.url + report.scannedAt).digest('hex').slice(0, 12);
-    // Report links are signed and expire; recovery regenerates them from Stripe.
-    report.expiresAt = Date.now() + (30 * 24 * 60 * 60 * 1000);
+    // A paid order may already have a report: the Stripe webhook scans and
+    // emails one right after payment. Reuse it so the buyer sees the same
+    // report — and the same token — that is already in their inbox, and the
+    // site is crawled once per order instead of once per delivery path.
+    const stored = !body.preview && payment.verified && body.sessionId
+      ? await loadStoredReport(String(body.sessionId))
+      : null;
+
+    let report;
+    let token = null;
+    if (stored) {
+      report = stored.report;
+      token = stored.token;
+    } else {
+      report = await runScan(order.url);
+      const plan = enginePlan({
+        country: order.country,
+        language: order.language,
+        medium: order.medium,
+      });
+      report.engineNotes = plan.notes;
+      report.engineFleet = plan.engines;
+      report.enginePrimary = plan.primary;
+      report.customer = {
+        email: order.email || null,
+        country: order.country,
+        language: order.language,
+        medium: order.medium,
+      };
+      report.payment = payment;
+      report.id = crypto.createHash('sha256').update(report.target.url + report.scannedAt).digest('hex').slice(0, 12);
+      // Report links are signed and expire; recovery regenerates them from Stripe.
+      report.expiresAt = Date.now() + (30 * 24 * 60 * 60 * 1000);
+      if (!body.preview) {
+        token = signToken(report);
+        // Hand the report to the other delivery path (webhook ↔ browser).
+        if (payment.verified && body.sessionId) await saveReport(String(body.sessionId), token);
+      }
+    }
 
     // A report now exists for this order, so the webhook record can stop
     // looking abandoned. Best effort: a failure here must not cost the
@@ -226,7 +250,19 @@ module.exports = async function handler(req, res) {
       return json(res, 200, buildPreviewResponse(report));
     }
 
-    const token = signToken(report);
+    // One email per order: the same token the page shows is the one mailed, and
+    // the order-record guard makes this a no-op when the webhook already sent.
+    if (payment.verified) {
+      try {
+        const delivery = await deliverReportEmail(session || String(body.sessionId), { report, token });
+        if (!delivery.sent) {
+          console.log('report email skipped', JSON.stringify({ session: body.sessionId, reason: delivery.reason }));
+        }
+      } catch (err) {
+        console.error('could not email report from scan', body.sessionId, err && err.message);
+      }
+    }
+
     return json(res, 200, {
       ok: true,
       token,
