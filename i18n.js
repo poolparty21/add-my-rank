@@ -156,6 +156,26 @@
       'faq.q5': 'Do you build spammy backlinks?',
       'faq.a5': 'No — never. Scaled link schemes violate Google spam policies and can get your site penalised. Your boost is submissions, pings and crawlability: the clean work that helps and cannot hurt.',
 
+      // Engine landing pages. {engine} comes from the page's data-i18n-vars.
+      'engine.meta.title': '{engine} submission & crawlability report — Add My Rank',
+      'engine.meta.description': 'See what {engine} can actually crawl on your site, fix it, and get submitted to {engine} plus 13 more engines — full 17-check report for $7.',
+      'engine.eyebrow': 'ENGINE GUIDE',
+      'engine.h1': 'Get found on {engine}.',
+      'engine.lede.google': 'Google is where most of the world searches, and it decides what to index from your robots.txt, your sitemap and a crawl of your pages. If any of those are broken, the best page you ever wrote never shows up.',
+      'engine.lede.bing': 'Bing powers its own results and feeds DuckDuckGo and Yahoo. Its Webmaster Tools take a sitemap and an IndexNow ping — the fastest legitimate way to tell it a page exists.',
+      'engine.lede.duckduckgo': 'DuckDuckGo runs no crawler of its own; it draws on the Bing index. That makes your Bing setup and your crawlability the whole game — if Bing cannot index you, DuckDuckGo cannot show you.',
+      'engine.how.title': 'What the $7 boost does',
+      'engine.step1.title': 'We crawl your site',
+      'engine.step1.p': '17 real checks: robots.txt, sitemap, meta, canonicals, structured data, mobile and speed. You get the score and every fix ranked by impact.',
+      'engine.step2.title': 'We submit to {engine}',
+      'engine.step2.p': 'Official channels only — no link schemes and no shortcuts. Your site goes to {engine} and the rest of a 14-engine fleet matched to your market.',
+      'engine.step3.title': 'You get the report',
+      'engine.step3.p': 'A signed report link lands in your inbox within minutes, with each finding and the exact fix for it.',
+      'engine.cta': 'Boost my site on {engine} — $7',
+      'engine.ctaNote': 'One-time $7. Report by email. Submitted to {engine} and 13 more engines.',
+      'engine.others': 'Other engine guides',
+      'engine.allEngines': 'All 14 engines',
+
       'cta.title': 'Ready to be found?',
       'cta.p': 'Screen your site free. See the fixes. Decide afterwards.',
       'cta.button': 'Screen my site free',
@@ -408,6 +428,25 @@
       'faq.a4': 'Nur offizielle Kanäle: Google Search Console, Bing Webmaster Tools (versorgt auch DuckDuckGo und Yahoo), Baidu Zhanzhang, Yandex Webmaster, Naver Search Advisor, Seznam Webmaster, dazu IndexNow-Pings und Stufe-3-Maschinen passend zu Land und Sprache.',
       'faq.q5': 'Baut ihr Spam-Backlinks?',
       'faq.a5': 'Nein — niemals. Gekaufte Linknetzwerke verstoßen gegen Googles Spam-Richtlinien und können deine Seite abstrafen. Dein Boost sind Anmeldungen, Pings und Crawlbarkeit: saubere Arbeit, die hilft und nicht schaden kann.',
+
+      'engine.meta.title': '{engine}-Anmeldung & Crawlbarkeitsbericht — Add My Rank',
+      'engine.meta.description': 'Sieh, was {engine} auf deiner Seite wirklich crawlen kann, behebe es und lass dich bei {engine} und 13 weiteren Suchmaschinen anmelden — vollständiger Bericht mit 17 Checks für 7 $.',
+      'engine.eyebrow': 'SUCHMASCHINEN-GUIDE',
+      'engine.h1': 'Bei {engine} gefunden werden.',
+      'engine.lede.google': 'Google ist dort, wo der Großteil der Welt sucht, und entscheidet anhand deiner robots.txt, deiner Sitemap und eines Crawls deiner Seiten, was indexiert wird. Ist davon etwas kaputt, taucht die beste Seite, die du je geschrieben hast, nie auf.',
+      'engine.lede.bing': 'Bing liefert eigene Ergebnisse und versorgt DuckDuckGo und Yahoo. Die Webmaster Tools nehmen eine Sitemap und einen IndexNow-Ping an — der schnellste legitime Weg, ihm zu sagen, dass eine Seite existiert.',
+      'engine.lede.duckduckgo': 'DuckDuckGo hat keinen eigenen Crawler; es nutzt den Bing-Index. Damit entscheiden dein Bing-Setup und deine Crawlbarkeit über alles — was Bing nicht indexieren kann, kann DuckDuckGo nicht zeigen.',
+      'engine.how.title': 'Was der 7-$-Boost macht',
+      'engine.step1.title': 'Wir crawlen deine Seite',
+      'engine.step1.p': '17 echte Checks: robots.txt, Sitemap, Meta, Canonicals, strukturierte Daten, Mobil und Geschwindigkeit. Du bekommst den Score und jeden Fix nach Wirkung sortiert.',
+      'engine.step2.title': 'Wir melden dich bei {engine} an',
+      'engine.step2.p': 'Nur offizielle Kanäle — keine Linknetzwerke, keine Abkürzungen. Deine Seite geht an {engine} und den Rest einer 14-Suchmaschinen-Flotte, passend zu deinem Markt.',
+      'engine.step3.title': 'Du bekommst den Bericht',
+      'engine.step3.p': 'Ein signierter Berichtslink landet in Minuten in deinem Postfach — mit jedem Befund und der genauen Lösung.',
+      'engine.cta': 'Meine Seite bei {engine} boosten — 7 $',
+      'engine.ctaNote': 'Einmalig 7 $. Bericht per E-Mail. Anmeldung bei {engine} und 13 weiteren Suchmaschinen.',
+      'engine.others': 'Weitere Suchmaschinen-Guides',
+      'engine.allEngines': 'Alle 14 Suchmaschinen',
 
       'cta.title': 'Bereit, gefunden zu werden?',
       'cta.p': 'Seite kostenlos prüfen. Fixes sehen. Danach entscheiden.',
@@ -662,6 +701,25 @@
       'faq.q5': 'Budujecie spamowe linki?',
       'faq.a5': 'Nie — nigdy. Masowe schematy linków łamią zasady Google i mogą zaszkodzić stronie. Twój boost to zgłoszenia, pingi i crawlability: czysta praca, która pomaga i nie szkodzi.',
 
+      'engine.meta.title': 'Zgłoszenie do {engine} i raport crawlability — Add My Rank',
+      'engine.meta.description': 'Zobacz, co {engine} naprawdę może zeskanować na Twojej stronie, popraw to i zgłoś stronę do {engine} oraz 13 innych wyszukiwarek — pełny raport z 17 testami za 7 $.',
+      'engine.eyebrow': 'PRZEWODNIK PO WYSZUKIWARKACH',
+      'engine.h1': 'Znajdź się w {engine}.',
+      'engine.lede.google': 'Google to miejsce, w którym szuka większość świata, i to on decyduje na podstawie robots.txt, sitemapy i skanowania stron, co zaindeksuje. Jeśli coś z tego nie działa, najlepsza strona, jaką napisałeś, nigdy się nie pojawi.',
+      'engine.lede.bing': 'Bing ma własne wyniki i zasila DuckDuckGo oraz Yahoo. Jego Webmaster Tools przyjmują sitemapę i ping IndexNow — najszybszy legalny sposób, by powiedzieć mu, że strona istnieje.',
+      'engine.lede.duckduckgo': 'DuckDuckGo nie ma własnego crawlera — korzysta z indeksu Binga. Dlatego Twoja konfiguracja Binga i crawlability decydują o wszystkim: czego Bing nie zaindeksuje, tego DuckDuckGo nie pokaże.',
+      'engine.how.title': 'Co robi boost za 7 $',
+      'engine.step1.title': 'Skanujemy Twoją stronę',
+      'engine.step1.p': '17 prawdziwych testów: robots.txt, sitemapa, meta, canonicale, dane strukturalne, mobile i szybkość. Dostajesz wynik i każdą poprawkę uszeregowaną według wpływu.',
+      'engine.step2.title': 'Zgłaszamy Cię do {engine}',
+      'engine.step2.p': 'Tylko oficjalne kanały — żadnych sieci linków i skrótów. Twoja strona trafia do {engine} i reszty floty 14 wyszukiwarek dopasowanej do Twojego rynku.',
+      'engine.step3.title': 'Dostajesz raport',
+      'engine.step3.p': 'Podpisany link do raportu trafia na Twoją skrzynkę w kilka minut — z każdym wynikiem i dokładną poprawką.',
+      'engine.cta': 'Zboostuj moją stronę w {engine} — 7 $',
+      'engine.ctaNote': 'Jednorazowo 7 $. Raport e-mailem. Zgłoszenie do {engine} i 13 innych wyszukiwarek.',
+      'engine.others': 'Inne przewodniki po wyszukiwarkach',
+      'engine.allEngines': 'Wszystkie 14 wyszukiwarek',
+
       'cta.title': 'Gotowy, żeby Cię znaleziono?',
       'cta.p': 'Sprawdź stronę za darmo. Zobacz poprawki. Zdecyduj potem.',
       'cta.button': 'Sprawdź stronę za darmo',
@@ -915,6 +973,25 @@
       'faq.q5': 'Fabriquez-vous des backlinks spam ?',
       'faq.a5': 'Non — jamais. Les réseaux de liens à grande échelle violent les règles anti-spam de Google et peuvent pénaliser votre site. Votre boost, ce sont des soumissions, des pings et de l’explorabilité : du travail propre qui aide sans nuire.',
 
+      'engine.meta.title': 'Soumission à {engine} et rapport d’explorabilité — Add My Rank',
+      'engine.meta.description': 'Voyez ce que {engine} peut réellement explorer sur votre site, corrigez-le et faites-vous inscrire sur {engine} et 13 autres moteurs — rapport complet de 17 contrôles pour 7 $.',
+      'engine.eyebrow': 'GUIDE MOTEUR',
+      'engine.h1': 'Soyez trouvé sur {engine}.',
+      'engine.lede.google': 'Google concentre la majorité des recherches mondiales et décide de ce qu’il indexe à partir de votre robots.txt, de votre sitemap et de l’exploration de vos pages. Si l’un des trois est cassé, la meilleure page que vous ayez jamais écrite n’apparaîtra jamais.',
+      'engine.lede.bing': 'Bing produit ses propres résultats et alimente DuckDuckGo et Yahoo. Ses Webmaster Tools acceptent un sitemap et un ping IndexNow — le moyen légitime le plus rapide de lui signaler qu’une page existe.',
+      'engine.lede.duckduckgo': 'DuckDuckGo n’a pas de robot d’exploration : il s’appuie sur l’index de Bing. Votre configuration Bing et votre explorabilité font donc tout le travail — ce que Bing ne peut pas indexer, DuckDuckGo ne peut pas l’afficher.',
+      'engine.how.title': 'Ce que fait le boost à 7 $',
+      'engine.step1.title': 'Nous explorons votre site',
+      'engine.step1.p': '17 contrôles réels : robots.txt, sitemap, meta, canoniques, données structurées, mobile et vitesse. Vous obtenez le score et chaque correction classée par impact.',
+      'engine.step2.title': 'Nous vous inscrivons sur {engine}',
+      'engine.step2.p': 'Canaux officiels uniquement — aucun réseau de liens, aucun raccourci. Votre site part vers {engine} et le reste d’une flotte de 14 moteurs adaptée à votre marché.',
+      'engine.step3.title': 'Vous recevez le rapport',
+      'engine.step3.p': 'Un lien de rapport signé arrive dans votre boîte en quelques minutes, avec chaque constat et la correction exacte.',
+      'engine.cta': 'Booster mon site sur {engine} — 7 $',
+      'engine.ctaNote': '7 $ une seule fois. Rapport par e-mail. Soumission à {engine} et 13 autres moteurs.',
+      'engine.others': 'Autres guides moteurs',
+      'engine.allEngines': 'Les 14 moteurs',
+
       'cta.title': 'Prêt à être trouvé ?',
       'cta.p': 'Testez votre site gratuitement. Voyez les corrections. Décidez ensuite.',
       'cta.button': 'Tester mon site gratuitement',
@@ -1051,19 +1128,25 @@
     });
   }
 
+  /** Per-page placeholders, e.g. an engine page's {"engine":"Google"}. */
+  var pageVars = {};
+  try {
+    pageVars = JSON.parse((document.body && document.body.getAttribute('data-i18n-vars')) || '{}') || {};
+  } catch (err) { pageVars = {}; }
+
   function apply(root) {
     var scope = root || document;
     scope.querySelectorAll('[data-i18n]').forEach(function (el) {
-      el.textContent = t(el.getAttribute('data-i18n'));
+      el.textContent = t(el.getAttribute('data-i18n'), pageVars);
     });
     scope.querySelectorAll('[data-i18n-html]').forEach(function (el) {
-      el.innerHTML = t(el.getAttribute('data-i18n-html'));
+      el.innerHTML = t(el.getAttribute('data-i18n-html'), pageVars);
     });
     scope.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {
-      el.setAttribute('placeholder', t(el.getAttribute('data-i18n-placeholder')));
+      el.setAttribute('placeholder', t(el.getAttribute('data-i18n-placeholder'), pageVars));
     });
     scope.querySelectorAll('[data-i18n-aria]').forEach(function (el) {
-      el.setAttribute('aria-label', t(el.getAttribute('data-i18n-aria')));
+      el.setAttribute('aria-label', t(el.getAttribute('data-i18n-aria'), pageVars));
     });
 
     document.documentElement.lang = current;
@@ -1073,11 +1156,11 @@
     var provider = window.AMR && window.AMR.pageTitle;
     document.title = typeof provider === 'function'
       ? provider()
-      : t((body && body.getAttribute('data-title-key')) || 'meta.title');
+      : t((body && body.getAttribute('data-title-key')) || 'meta.title', pageVars);
     var desc = document.querySelector('meta[name="description"]');
     if (desc) {
       var descKey = (body && body.getAttribute('data-desc-key')) || 'meta.description';
-      desc.setAttribute('content', t(descKey));
+      desc.setAttribute('content', t(descKey, pageVars));
     }
 
     document.querySelectorAll('[data-lang]').forEach(function (btn) {

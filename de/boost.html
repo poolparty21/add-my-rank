@@ -184,6 +184,7 @@
             <!-- Tier 2 -->
             <div class="text-[10px] uppercase tracking-widest text-slate-600 font-bold pt-3">Tier 2 — regional giants</div>
             <div class="grid sm:grid-cols-2 gap-2">
+              <!-- engines:boost-tier2 -->
               <label class="engine-row on flex items-center gap-3 border border-slate-200 rounded-xl px-4 py-3 cursor-pointer">
                 <input type="checkbox" checked onchange="countEngines()" data-engine="Yandex" class="eng accent-indigo-500 w-4 h-4">
                 <span class="text-sm font-semibold text-slate-900">🇷🇺 Yandex</span><span class="ml-auto mono text-[10px] text-slate-600">IndexNow</span>
@@ -201,18 +202,20 @@
                 <span class="text-sm font-semibold text-slate-900">🇨🇿 Seznam</span><span class="ml-auto mono text-[10px] text-slate-600">IndexNow</span>
               </label>
               <label class="engine-row on flex items-center gap-3 border border-slate-200 rounded-xl px-4 py-3 cursor-pointer">
-                <input type="checkbox" checked onchange="countEngines()" data-engine="Yahoo Japan" class="eng accent-indigo-500 w-4 h-4">
+                <input type="checkbox" checked onchange="countEngines()" data-engine="Yahoo! Japan" class="eng accent-indigo-500 w-4 h-4">
                 <span class="text-sm font-semibold text-slate-900">🇯🇵 Yahoo! Japan</span><span class="ml-auto mono text-[10px] text-slate-600">submission</span>
               </label>
               <label class="engine-row on flex items-center gap-3 border border-slate-200 rounded-xl px-4 py-3 cursor-pointer">
-                <input type="checkbox" checked onchange="countEngines()" data-engine="Yahoo Taiwan" class="eng accent-indigo-500 w-4 h-4">
+                <input type="checkbox" checked onchange="countEngines()" data-engine="Yahoo! Taiwan" class="eng accent-indigo-500 w-4 h-4">
                 <span class="text-sm font-semibold text-slate-900">🇹🇼 Yahoo! Taiwan</span><span class="ml-auto mono text-[10px] text-slate-600">submission</span>
               </label>
+              <!-- /engines:boost-tier2 -->
             </div>
 
             <!-- Tier 3 -->
             <div class="text-[10px] uppercase tracking-widest text-slate-600 font-bold pt-3">Tier 3 — independent & privacy engines</div>
             <div class="grid sm:grid-cols-2 gap-2">
+              <!-- engines:boost-tier3 -->
               <label class="engine-row on flex items-center gap-3 border border-slate-200 rounded-xl px-4 py-3 cursor-pointer">
                 <input type="checkbox" checked onchange="countEngines()" data-engine="Mojeek" class="eng accent-fuchsia-500 w-4 h-4">
                 <span class="text-sm font-semibold text-slate-900">Mojeek</span><span class="ml-auto mono text-[10px] text-slate-600">own crawler</span>
@@ -233,6 +236,7 @@
                 <input type="checkbox" checked onchange="countEngines()" data-engine="Stract" class="eng accent-fuchsia-500 w-4 h-4">
                 <span class="text-sm font-semibold text-slate-900">Stract</span><span class="ml-auto mono text-[10px] text-slate-600">open index</span>
               </label>
+              <!-- /engines:boost-tier3 -->
             </div>
           </div>
         </div>
@@ -287,16 +291,19 @@
   </div>
 </footer>
 
+<script src="/engines.js"></script>
 <script src="/i18n.js"></script>
 
 <script>
   // ---------------------------------------------------------------------------
-  // Engine fleet
+  // Engine fleet — read from engines.js, the same registry the checkbox rows are
+  // generated from and the same names /api/checkout validates.
   // ---------------------------------------------------------------------------
+  const FLEET = window.AMR_ENGINES;
   const T = (key, vars) => (window.AMR ? window.AMR.t(key, vars) : key);
 
   function countEngines() {
-    const tier1 = 3; // Google, Bing, DuckDuckGo — locked on
+    const tier1 = FLEET.groups.core.length; // Google, Bing, DuckDuckGo — locked on
     const checked = document.querySelectorAll('.eng:checked').length;
     const total = tier1 + checked;
     document.getElementById('engine-count-label').textContent = T('boost.selected', { n: total });
@@ -305,20 +312,11 @@
     return total;
   }
 
-  const MARKETS = {
-    RU: { flag: '🇷🇺', engine: 'Yandex' },
-    CN: { flag: '🇨🇳', engine: 'Baidu' },
-    KR: { flag: '🇰🇷', engine: 'Naver' },
-    CZ: { flag: '🇨🇿', engine: 'Seznam' },
-    JP: { flag: '🇯🇵', engine: 'Yahoo! Japan' },
-    TW: { flag: '🇹🇼', engine: 'Yahoo! Taiwan' },
-  };
-
   function updateMarket() {
     const note = document.getElementById('market-note');
-    const market = MARKETS[document.getElementById('sel-country').value];
+    const market = FLEET.forCountry(document.getElementById('sel-country').value);
     if (market) {
-      note.textContent = market.flag + ' ' + T('boost.marketNote', { engine: market.engine });
+      note.textContent = market.flag + ' ' + T('boost.marketNote', { engine: market.name });
       note.classList.remove('hidden');
     } else {
       note.classList.add('hidden');
@@ -370,7 +368,7 @@
   function gatherOrder() {
     const engines = [...document.querySelectorAll('.eng:checked')]
       .map((cb) => cb.dataset.engine)
-      .concat(['Google', 'Bing', 'DuckDuckGo']);
+      .concat(FLEET.namesFor(FLEET.groups.core));
     return {
       url: $('inp-url').value.trim(),
       email: $('inp-email').value.trim(),

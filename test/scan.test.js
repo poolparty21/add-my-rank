@@ -123,10 +123,60 @@ test('generated pages expose canonical, social, structured, and analytics metada
   assert.match(read('404.html'), /noindex/);
 });
 
+test('the engine fleet has one identity across registry, pages and checkout', () => {
+  const registry = require('../engines.js');
+  const { ALL_ENGINES } = require('../api/_lib.js');
+
+  // The API validates against the registry's names, and reports use those names.
+  assert.deepEqual(ALL_ENGINES, registry.allNames);
+  assert.equal(new Set(registry.allNames).size, registry.allNames.length);
+  assert.equal(new Set(registry.engines.map((e) => e.slug)).size, registry.engines.length);
+
+  // Every slug a page group refers to resolves to a real engine.
+  const grouped = Object.values(registry.groups).concat(Object.values(registry.boostTiers)).flat();
+  for (const slug of grouped) assert.equal(registry.bySlug(slug).slug, slug);
+
+  // The boost form submits canonical names only — no "Yahoo Japan" that checkout would drop.
+  for (const file of ['boost.html', 'de/boost.html', 'pl/boost.html', 'fr/boost.html']) {
+    const html = fs.readFileSync(path.join(ROOT, file), 'utf8');
+    const submitted = [...html.matchAll(/data-engine="([^"]+)" class="eng\b/g)].map((m) => m[1]);
+    assert.equal(submitted.length, 11, file + ' should offer 11 optional engines');
+    for (const name of submitted) {
+      assert.ok(ALL_ENGINES.includes(name), file + ' submits unknown engine: ' + name);
+    }
+  }
+
+  // The landing page renders the same fleet, with the registry's short labels.
+  const index = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
+  assert.match(index, /Seznam · Yahoo! JP · Yahoo! TW/);
+  assert.match(index, /Mojeek · Brave · Startpage/);
+});
+
 test('sitemap excludes signed report pages', () => {
   const sitemap = fs.readFileSync(path.join(ROOT, 'sitemap.xml'), 'utf8');
-  assert.equal((sitemap.match(/<url>/g) || []).length, 8);
+  // index + boost in four languages, plus phase-1 engine pages (3 × 4).
+  assert.equal((sitemap.match(/<url>/g) || []).length, 20);
   assert.doesNotMatch(sitemap, /\/report/);
+  assert.match(sitemap, /https:\/\/add-my-rank\.vercel\.app\/de\/submit\/bing/);
+});
+
+test('phase-1 engine pages exist per locale and lead to a prefilled boost', () => {
+  const cases = [
+    ['submit/google.html', '', 'US'],
+    ['de/submit/google.html', '/de', 'DE'],
+    ['pl/submit/duckduckgo.html', '/pl', 'PL'],
+    ['fr/submit/bing.html', '/fr', 'FR'],
+  ];
+  for (const [file, prefix, country] of cases) {
+    const html = fs.readFileSync(path.join(ROOT, file), 'utf8');
+    const slug = file.replace(/^(de|pl|fr)\//, '').replace(/\.html$/, '');
+    assert.ok(
+      html.includes('<link rel="canonical" href="https://add-my-rank.vercel.app' + prefix + '/' + slug + '">'),
+      file + ' should carry its own canonical'
+    );
+    assert.ok(html.includes('href="' + prefix + '/boost?country=' + country + '"'), file + ' should prefill the market');
+    assert.doesNotMatch(html, /__[A-Z]+__/, file + ' still has an unfilled placeholder');
+  }
 });
 
 test('report email carries the signed link and escapes page data', () => {
@@ -322,6 +372,7 @@ test('emailing an order reuses its stored report instead of crawling again', asy
   assert.equal(delivery.reportId, built.report.id);
   assert.ok(mailed.text.includes('#t=' + built.token), 'the emailed link carries the stored token');
 });
+
 
 test('build-locales check passes', () => {
   const result = spawnSync(process.execPath, ['build-locales.js', '--check'], {

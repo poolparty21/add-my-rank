@@ -20,6 +20,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
+const engines = require('./engines.js');
 
 const ROOT = __dirname;
 const ORIGIN = 'https://add-my-rank.vercel.app';
@@ -31,8 +32,31 @@ const PAGES = [
   { file: 'report.html', kind: 'report', titleKey: 'report.meta.title', descKey: 'report.meta.description' },
 ];
 
+/**
+ * Engine landing pages, phase 1: the three engines every boost includes. One
+ * page per engine per language, generated from engine.html. Later phases add
+ * slugs here (and their copy in i18n.js) without touching the generator.
+ */
+const ENGINE_PHASE_1 = ['google', 'bing', 'duckduckgo'];
+
+/** The market each language most likely sells into, prefilled on /boost. */
+const LOCALE_COUNTRY = { en: 'US', de: 'DE', pl: 'PL', fr: 'FR' };
+
+function enginePage(slug) {
+  return {
+    file: 'submit/' + slug + '.html',
+    kind: 'submit/' + slug,
+    template: 'engine.html',
+    titleKey: 'engine.meta.title',
+    descKey: 'engine.meta.description',
+    engine: slug,
+  };
+}
+
+const ENGINE_PAGES = ENGINE_PHASE_1.map(enginePage);
+
 /** Report pages are signed, noindex token views — never in the sitemap. */
-const SITEMAP_PAGES = PAGES.filter((page) => page.kind !== 'report');
+const SITEMAP_PAGES = PAGES.filter((page) => page.kind !== 'report').concat(ENGINE_PAGES);
 
 const MODE = process.argv.includes('--check') ? 'check' : process.argv.includes('--warn') ? 'warn' : 'write';
 
@@ -74,6 +98,11 @@ function urlFor(lang, kind) {
   const prefix = lang === 'en' ? '' : '/' + lang;
   if (kind === 'index') return ORIGIN + prefix + (prefix ? '' : '/');
   return ORIGIN + prefix + '/' + kind;
+}
+
+/** Site-absolute path for a generated page, e.g. /de/submit/bing. */
+function pathFor(lang, kind) {
+  return urlFor(lang, kind).slice(ORIGIN.length) || '/';
 }
 
 function headBlock(lang, kind) {
@@ -119,6 +148,7 @@ function rewriteLinks(html, lang) {
   return html
     .replace(/<html lang="en">/, '<html lang="' + lang + '" data-locale="' + lang + '">')
     .replace('src="i18n.js"', 'src="/i18n.js"')
+    .replace('src="engines.js"', 'src="/engines.js"')
     .replace(/href="index\.html#/g, 'href="/' + lang + '/#')
     .replace(/href="index\.html"/g, 'href="/' + lang + '/"')
     .replace(/href="boost\.html"/g, 'href="/' + lang + '/boost.html"')
@@ -126,6 +156,101 @@ function rewriteLinks(html, lang) {
     .replace(/href="\/index\.html"/g, 'href="/' + lang + '"')
     .replace(/href="\/boost\.html#/g, 'href="/' + lang + '/boost#')
     .replace(/href="\/boost\.html"/g, 'href="/' + lang + '/boost"');
+}
+
+/** Escape a value for use inside a double-quoted HTML attribute. */
+function attr(value) {
+  return String(value).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+}
+
+/** Compact engine label list for the landing page's cards, e.g. "Yahoo! JP · Yahoo! TW". */
+function engineLabelLine(slugs) {
+  return slugs.map((slug) => engines.bySlug(slug).short).join(' · ');
+}
+
+/** One boost-form checkbox row. `data-engine` carries the canonical name. */
+function engineRow(slug, accent) {
+  const engine = engines.bySlug(slug);
+  return [
+    '              <label class="engine-row on flex items-center gap-3 border border-slate-200 rounded-xl px-4 py-3 cursor-pointer">',
+    '                <input type="checkbox" checked onchange="countEngines()" data-engine="' + attr(engine.name) +
+      '" class="eng accent-' + accent + '-500 w-4 h-4">',
+    '                <span class="text-sm font-semibold text-slate-900">' + (engine.flag ? engine.flag + ' ' : '') + engine.name +
+      '</span><span class="ml-auto mono text-[10px] text-slate-600">' + engine.channel + '</span>',
+    '              </label>',
+  ].join('\n');
+}
+
+/**
+ * Engine names are never typed twice: the landing page's cards and the boost
+ * form's checkboxes are rendered here from engines.js, inside markers, so a
+ * page that is regenerated for de/pl/fr keeps the same fleet and the same
+ * slugs as the API that validates the order.
+ */
+const ENGINE_BLOCKS = {
+  core: () => engineLabelLine(engines.groups.core),
+  giants: () => engineLabelLine(engines.groups.giants),
+  local: () => engineLabelLine(engines.groups.local),
+  independent: () => engineLabelLine(engines.groups.independent),
+  longtail: () => engineLabelLine(engines.groups.longtail),
+  'boost-tier2': () => engines.boostTiers.tier2.map((slug) => engineRow(slug, 'indigo')).join('\n'),
+  'boost-tier3': () => engines.boostTiers.tier3.map((slug) => engineRow(slug, 'fuchsia')).join('\n'),
+};
+
+/** Cross-links between the engine pages, localized, current page marked. */
+function engineLinks(lang, currentSlug) {
+  const links = ENGINE_PHASE_1.map((slug) => {
+    const engine = engines.bySlug(slug);
+    const current = slug === currentSlug;
+    return '<a href="' + pathFor(lang, 'submit/' + slug) + '"' + (current ? ' aria-current="page"' : '') +
+      ' class="inline-flex items-center px-4 py-2 rounded-xl border text-sm font-semibold transition ' +
+      (current
+        ? 'border-indigo-300 bg-indigo-50 text-indigo-800'
+        : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300') +
+      '">' + engine.name + '</a>';
+  });
+  links.push('<a href="' + pathFor(lang, 'index') + '#engines" data-i18n="engine.allEngines"' +
+    ' class="inline-flex items-center px-4 py-2 rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-700 hover:border-slate-300 transition">All 14 engines</a>');
+  return '<div class="mt-4 flex flex-wrap gap-3">' + links.join('') + '</div>';
+}
+
+/**
+ * One engine page in one language. Every placeholder the template needs is
+ * filled here: engine identity, locale links, and the prefilled /boost CTA.
+ */
+function renderEnginePage(template, page, lang) {
+  const engine = engines.bySlug(page.engine);
+  const raw = translator(lang);
+  const t = (key) => raw(key, { engine: engine.name });
+  let html = template
+    .replace(/__ENGINE__/g, engine.name)
+    .replace(/__SLUG__/g, engine.slug)
+    .replace(/__HOME__/g, pathFor(lang, 'index'))
+    .replace(/__BOOST__/g, pathFor(lang, 'boost'))
+    .replace(/__COUNTRY__/g, LOCALE_COUNTRY[lang])
+    .replace(/data-i18n="engine\.lede"/g, 'data-i18n="engine.lede.' + engine.slug + '"');
+  html = applyHead(html, lang, page, t);
+  html = html.replace(/<!-- engine-links -->[\s\S]*?<!-- \/engine-links -->/, () => engineLinks(lang, engine.slug));
+  html = translateContent(html, t);
+  html = translateAttributes(html, t);
+  html = rewriteLinks(html, lang);
+  return html;
+}
+
+function applyEngineBlocks(html) {
+  let out = html;
+  for (const [name, render] of Object.entries(ENGINE_BLOCKS)) {
+    const block = new RegExp('<!-- engines:' + name + ' -->[\\s\\S]*?<!-- /engines:' + name + ' -->');
+    out = out.replace(block, () => {
+      const inner = render();
+      // Multi-line blocks (the boost rows) get their own lines; the single-line
+      // label lists stay inline so the card markup does not grow whitespace.
+      const gap = inner.includes('\n') ? '\n' : '';
+      const pad = inner.includes('\n') ? '\n              ' : '';
+      return '<!-- engines:' + name + ' -->' + gap + inner + pad + '<!-- /engines:' + name + ' -->';
+    });
+  }
+  return out;
 }
 
 /** Language-aware JSON-LD so crawlers get the same entity on every locale. */
@@ -149,6 +274,19 @@ function structuredData(lang, page, t) {
       publisher: { '@id': ORIGIN + '/#organization' },
     },
   ];
+  if (page.kind.indexOf('submit/') === 0) {
+    // Engine pages describe one page of the site; the site itself is the
+    // WebSite node above, so the two are linked rather than duplicated.
+    graph.push({
+      '@type': 'WebPage',
+      '@id': urlFor(lang, page.kind) + '#webpage',
+      url: urlFor(lang, page.kind),
+      name: t('engine.h1'),
+      description: t(page.descKey),
+      inLanguage: lang,
+      isPartOf: { '@id': ORIGIN + '/#website' },
+    });
+  }
   if (page.kind === 'boost') {
     graph.push({
       '@type': 'Service',
@@ -166,6 +304,32 @@ function structuredData(lang, page, t) {
         availability: 'https://schema.org/InStock',
       },
     });
+  }
+  if (page.kind === 'index') {
+    // FAQPage mirrors the visible #faq section. Building it from the same
+    // i18n keys keeps each locale's structured data in that page's language —
+    // a hand-written English block in the template would be copied verbatim
+    // into de/pl/fr and disagree with the translated page.
+    const questions = [];
+    for (let n = 1; n <= 5; n += 1) {
+      const question = t('faq.q' + n);
+      const answer = t('faq.a' + n);
+      if (!question || !answer) continue;
+      questions.push({
+        '@type': 'Question',
+        name: question,
+        acceptedAnswer: { '@type': 'Answer', text: answer },
+      });
+    }
+    if (questions.length) {
+      graph.push({
+        '@type': 'FAQPage',
+        '@id': urlFor(lang, 'index') + '#faq',
+        url: urlFor(lang, 'index'),
+        inLanguage: lang,
+        mainEntity: questions,
+      });
+    }
   }
   const json = JSON.stringify({ '@context': 'https://schema.org', '@graph': graph }).replace(/</g, '\\u003c');
   // The markers let the next run replace exactly this block. Any other
@@ -239,16 +403,22 @@ function sitemap() {
 function renderAll() {
   const outputs = new Map();
   outputs.set('sitemap.xml', sitemap());
+  const engineTemplate = fs.readFileSync(path.join(ROOT, 'engine.html'), 'utf8');
+  for (const page of ENGINE_PAGES) {
+    for (const lang of ALL) {
+      outputs.set((lang === 'en' ? '' : lang + '/') + page.file, renderEnginePage(engineTemplate, page, lang));
+    }
+  }
   for (const page of PAGES) {
     const template = fs.readFileSync(path.join(ROOT, page.file), 'utf8');
-    outputs.set(page.file, applyHead(template, 'en', page, translator('en')));
+    outputs.set(page.file, applyEngineBlocks(applyHead(template, 'en', page, translator('en'))));
     for (const lang of LOCALES) {
       const t = translator(lang);
       let html = applyHead(template, lang, page, t);
       html = translateContent(html, t);
       html = translateAttributes(html, t);
       html = rewriteLinks(html, lang);
-      outputs.set(lang + '/' + page.file, html);
+      outputs.set(lang + '/' + page.file, applyEngineBlocks(html));
     }
   }
   return outputs;

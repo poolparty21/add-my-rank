@@ -87,7 +87,7 @@
   }
 </style>
 <!-- structured-data -->
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://add-my-rank.vercel.app/#organization","name":"Add My Rank","url":"https://add-my-rank.vercel.app/","logo":"https://add-my-rank.vercel.app/favicon.svg"},{"@type":"WebSite","@id":"https://add-my-rank.vercel.app/#website","url":"https://add-my-rank.vercel.app/","name":"Add My Rank","description":"A real crawlability screening of your site: score, grade and the fixes that matter. Full boost submits you to 14 search engines.","inLanguage":"en","publisher":{"@id":"https://add-my-rank.vercel.app/#organization"}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://add-my-rank.vercel.app/#organization","name":"Add My Rank","url":"https://add-my-rank.vercel.app/","logo":"https://add-my-rank.vercel.app/favicon.svg"},{"@type":"WebSite","@id":"https://add-my-rank.vercel.app/#website","url":"https://add-my-rank.vercel.app/","name":"Add My Rank","description":"A real crawlability screening of your site: score, grade and the fixes that matter. Full boost submits you to 14 search engines.","inLanguage":"en","publisher":{"@id":"https://add-my-rank.vercel.app/#organization"}},{"@type":"FAQPage","@id":"https://add-my-rank.vercel.app/#faq","url":"https://add-my-rank.vercel.app/","inLanguage":"en","mainEntity":[{"@type":"Question","name":"What do I actually get?","acceptedAnswer":{"@type":"Answer","text":"A full report you can open immediately: a score out of 100, a letter grade, a breakdown across five categories (indexability, on-page, technical, mobile, speed), and every one of the 17 checks with what it found and exactly how to fix it. On top of that we submit your site to 14 search engines."}},{"@type":"Question","name":"I am not technical. Will I understand it?","acceptedAnswer":{"@type":"Answer","text":"That is who it is built for. Every finding says what it is, why it matters and what to do. If a fix is genuinely beyond you, hand the report back and we apply it."}},{"@type":"Question","name":"Will I be #1 on Google tomorrow?","acceptedAnswer":{"@type":"Answer","text":"No — and run from anyone who says otherwise. You get your site submitted to 14 engines, pinged via IndexNow, and every technical problem blocking crawlers identified and explained. Ranking depends on content and competition, but you cannot rank at all if you are not crawlable."}},{"@type":"Question","name":"What exactly do you submit to?","acceptedAnswer":{"@type":"Answer","text":"Official channels only: Google Search Console, Bing Webmaster Tools (which also feeds DuckDuckGo and Yahoo), Baidu Zhanzhang, Yandex Webmaster, Naver Search Advisor, Seznam Webmaster, plus IndexNow pings and tier-3 engines matched to your country and language."}},{"@type":"Question","name":"Do you build spammy backlinks?","acceptedAnswer":{"@type":"Answer","text":"No — never. Scaled link schemes violate Google spam policies and can get your site penalised. Your boost is submissions, pings and crawlability: the clean work that helps and cannot hurt."}}]}]}</script>
 <!-- /structured-data -->
 </head>
 <body class="bg-[#f6f7ff] text-slate-700 antialiased">
@@ -333,7 +333,7 @@
       <div class="flex flex-wrap items-center justify-between gap-4">
         <div>
           <div class="text-[11px] uppercase tracking-widest text-emerald-700 font-bold" data-i18n="engines.tier1.label">Tier 1 — everyone gets these</div>
-          <div class="text-xl font-black text-slate-900 mt-1">Google · Bing · DuckDuckGo</div>
+          <div class="text-xl font-black text-slate-900 mt-1"><!-- engines:core -->Google · Bing · DuckDuckGo<!-- /engines:core --></div>
           <p class="text-sm text-slate-600 mt-1" data-i18n="engines.tier1.p">Official submission via Search Console and Bing Webmaster Tools, plus sitemap ping where supported.</p>
         </div>
         <div class="mono text-[11px] text-emerald-700 border border-emerald-200 bg-emerald-50 rounded-xl px-3 py-2" data-i18n="engines.included">included</div>
@@ -341,24 +341,24 @@
     </div>
     <div class="card-hover glass border border-slate-200 rounded-3xl p-6">
       <div class="text-[11px] uppercase tracking-widest text-indigo-700 font-bold" data-i18n="engines.tier2.label">Tier 2 — regional giants</div>
-      <div class="text-lg font-black text-slate-900 mt-1">Yandex · Baidu · Naver</div>
+      <div class="text-lg font-black text-slate-900 mt-1"><!-- engines:giants -->Yandex · Baidu · Naver<!-- /engines:giants --></div>
       <p class="text-sm text-slate-600 mt-2 leading-relaxed" data-i18n="engines.tier2.p">Russia, China, Korea. Over a billion searches a day happen outside Google. Submitted via official webmaster channels.</p>
     </div>
     <div class="card-hover glass border border-slate-200 rounded-3xl p-6">
       <div class="text-[11px] uppercase tracking-widest text-indigo-700 font-bold" data-i18n="engines.tier2b.label">Tier 2 — local champions</div>
-      <div class="text-lg font-black text-slate-900 mt-1">Seznam · Yahoo! JP · Yahoo! TW</div>
+      <div class="text-lg font-black text-slate-900 mt-1"><!-- engines:local -->Seznam · Yahoo! JP · Yahoo! TW<!-- /engines:local --></div>
       <p class="text-sm text-slate-600 mt-2 leading-relaxed" data-i18n="engines.tier2b.p">Czechia, Japan, Taiwan — markets where the local engine beats Google outright.</p>
     </div>
     <div class="card-hover glass border border-slate-200 rounded-3xl p-6">
       <div class="text-[11px] uppercase tracking-widest text-indigo-700 font-bold" data-i18n="engines.tier2c.label">Tier 2 — independent</div>
-      <div class="text-lg font-black text-slate-900 mt-1">Mojeek · Brave · Startpage</div>
+      <div class="text-lg font-black text-slate-900 mt-1"><!-- engines:independent -->Mojeek · Brave · Startpage<!-- /engines:independent --></div>
       <p class="text-sm text-slate-600 mt-2 leading-relaxed" data-i18n="engines.tier2c.p">Independent, privacy-first crawlers. They send real referral traffic and almost nobody competes for placement there.</p>
     </div>
     <div class="card-hover glass border border-slate-200 rounded-3xl p-6 lg:col-span-3">
       <div class="flex flex-wrap items-center justify-between gap-4">
         <div>
           <div class="text-[11px] uppercase tracking-widest text-fuchsia-700 font-bold" data-i18n="engines.tier3.label">Tier 3 — the long tail</div>
-          <div class="text-xl font-black text-slate-900 mt-1">Mojeek · Brave Search · Startpage · Marginalia · Stract</div>
+          <div class="text-xl font-black text-slate-900 mt-1"><!-- engines:longtail -->Mojeek · Brave · Startpage · Marginalia · Stract<!-- /engines:longtail --></div>
           <p class="text-sm text-slate-600 mt-1" data-i18n="engines.tier3.p">Independent crawlers and privacy engines. Smaller reach, zero competition for attention, and real crawl traffic back to your site.</p>
         </div>
         <div class="mono text-[11px] text-fuchsia-700 border border-fuchsia-200 bg-fuchsia-50 rounded-xl px-3 py-2" data-i18n="engines.matched">country/language matched</div>

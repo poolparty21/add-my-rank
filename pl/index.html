@@ -87,7 +87,7 @@
   }
 </style>
 <!-- structured-data -->
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://add-my-rank.vercel.app/#organization","name":"Add My Rank","url":"https://add-my-rank.vercel.app/","logo":"https://add-my-rank.vercel.app/favicon.svg"},{"@type":"WebSite","@id":"https://add-my-rank.vercel.app/#website","url":"https://add-my-rank.vercel.app/pl","name":"Add My Rank","description":"Prawdziwy audyt indeksowalności: wynik, ocena i poprawki, które mają znaczenie. Pełny boost zgłasza stronę do 14 wyszukiwarek.","inLanguage":"pl","publisher":{"@id":"https://add-my-rank.vercel.app/#organization"}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://add-my-rank.vercel.app/#organization","name":"Add My Rank","url":"https://add-my-rank.vercel.app/","logo":"https://add-my-rank.vercel.app/favicon.svg"},{"@type":"WebSite","@id":"https://add-my-rank.vercel.app/#website","url":"https://add-my-rank.vercel.app/pl","name":"Add My Rank","description":"Prawdziwy audyt indeksowalności: wynik, ocena i poprawki, które mają znaczenie. Pełny boost zgłasza stronę do 14 wyszukiwarek.","inLanguage":"pl","publisher":{"@id":"https://add-my-rank.vercel.app/#organization"}},{"@type":"FAQPage","@id":"https://add-my-rank.vercel.app/pl#faq","url":"https://add-my-rank.vercel.app/pl","inLanguage":"pl","mainEntity":[{"@type":"Question","name":"Co dokładnie dostaję?","acceptedAnswer":{"@type":"Answer","text":"Pełny raport do otwarcia od razu: wynik na 100, ocena, podział na pięć kategorii (indeksowalność, on-page, technika, mobile, szybkość) i wszystkie 17 testów z wynikiem i dokładną poprawką. Do tego zgłoszenie strony do 14 wyszukiwarek."}},{"@type":"Question","name":"Nie jestem techniczny. Zrozumiem to?","acceptedAnswer":{"@type":"Answer","text":"Dla takich osób to jest zrobione. Każdy wynik mówi, czym jest, dlaczego ma znaczenie i co zrobić. Jeśli poprawka jest za trudna, oddaj raport i zrobimy ją za Ciebie."}},{"@type":"Question","name":"Będę jutro pierwszy w Google?","acceptedAnswer":{"@type":"Answer","text":"Nie — i uciekaj od każdego, kto to obiecuje. Dostajesz zgłoszenie do 14 wyszukiwarek, pingi IndexNow i wyjaśnienie każdego problemu z crawlem. Pozycja zależy od treści i konkurencji, ale bez crawlability nie ma szans."}},{"@type":"Question","name":"Do czego dokładnie zgłaszacie?","acceptedAnswer":{"@type":"Answer","text":"Tylko oficjalne kanały: Google Search Console, Bing Webmaster Tools (zasila też DuckDuckGo i Yahoo), Baidu Zhanzhang, Yandex Webmaster, Naver Search Advisor, Seznam Webmaster, plus pingi IndexNow i wyszukiwarki poziomu 3 dopasowane do kraju i języka."}},{"@type":"Question","name":"Budujecie spamowe linki?","acceptedAnswer":{"@type":"Answer","text":"Nie — nigdy. Masowe schematy linków łamią zasady Google i mogą zaszkodzić stronie. Twój boost to zgłoszenia, pingi i crawlability: czysta praca, która pomaga i nie szkodzi."}}]}]}</script>
 <!-- /structured-data -->
 </head>
 <body class="bg-[#f6f7ff] text-slate-700 antialiased">
@@ -327,7 +327,7 @@
       <div class="flex flex-wrap items-center justify-between gap-4">
         <div>
           <div class="text-[11px] uppercase tracking-widest text-emerald-700 font-bold" data-i18n="engines.tier1.label">Poziom 1 — zawsze w zestawie</div>
-          <div class="text-xl font-black text-slate-900 mt-1">Google · Bing · DuckDuckGo</div>
+          <div class="text-xl font-black text-slate-900 mt-1"><!-- engines:core -->Google · Bing · DuckDuckGo<!-- /engines:core --></div>
           <p class="text-sm text-slate-600 mt-1" data-i18n="engines.tier1.p">Oficjalne zgłoszenie przez Search Console i Bing Webmaster Tools oraz ping sitemapy, gdzie to możliwe.</p>
         </div>
         <div class="mono text-[11px] text-emerald-700 border border-emerald-200 bg-emerald-50 rounded-xl px-3 py-2" data-i18n="engines.included">w zestawie</div>
@@ -335,24 +335,24 @@
     </div>
     <div class="card-hover glass border border-slate-200 rounded-3xl p-6">
       <div class="text-[11px] uppercase tracking-widest text-indigo-700 font-bold" data-i18n="engines.tier2.label">Poziom 2 — regionalni giganci</div>
-      <div class="text-lg font-black text-slate-900 mt-1">Yandex · Baidu · Naver</div>
+      <div class="text-lg font-black text-slate-900 mt-1"><!-- engines:giants -->Yandex · Baidu · Naver<!-- /engines:giants --></div>
       <p class="text-sm text-slate-600 mt-2 leading-relaxed" data-i18n="engines.tier2.p">Rosja, Chiny, Korea. Ponad miliard wyszukiwań dziennie odbywa się poza Google. Zgłoszenie przez oficjalne kanały webmasterów.</p>
     </div>
     <div class="card-hover glass border border-slate-200 rounded-3xl p-6">
       <div class="text-[11px] uppercase tracking-widest text-indigo-700 font-bold" data-i18n="engines.tier2b.label">Poziom 2 — lokalni czempioni</div>
-      <div class="text-lg font-black text-slate-900 mt-1">Seznam · Yahoo! JP · Yahoo! TW</div>
+      <div class="text-lg font-black text-slate-900 mt-1"><!-- engines:local -->Seznam · Yahoo! JP · Yahoo! TW<!-- /engines:local --></div>
       <p class="text-sm text-slate-600 mt-2 leading-relaxed" data-i18n="engines.tier2b.p">Czechy, Japonia, Tajwan — rynki, gdzie lokalna wyszukiwarka wygrywa z Google.</p>
     </div>
     <div class="card-hover glass border border-slate-200 rounded-3xl p-6">
       <div class="text-[11px] uppercase tracking-widest text-indigo-700 font-bold" data-i18n="engines.tier2c.label">Poziom 2 — niezależni</div>
-      <div class="text-lg font-black text-slate-900 mt-1">Mojeek · Brave · Startpage</div>
+      <div class="text-lg font-black text-slate-900 mt-1"><!-- engines:independent -->Mojeek · Brave · Startpage<!-- /engines:independent --></div>
       <p class="text-sm text-slate-600 mt-2 leading-relaxed" data-i18n="engines.tier2c.p">Niezależne, prywatnościowe roboty. Przynoszą prawdziwy ruch, a konkurencja o miejsca jest znikoma.</p>
     </div>
     <div class="card-hover glass border border-slate-200 rounded-3xl p-6 lg:col-span-3">
       <div class="flex flex-wrap items-center justify-between gap-4">
         <div>
           <div class="text-[11px] uppercase tracking-widest text-fuchsia-700 font-bold" data-i18n="engines.tier3.label">Poziom 3 — długi ogon</div>
-          <div class="text-xl font-black text-slate-900 mt-1">Mojeek · Brave Search · Startpage · Marginalia · Stract</div>
+          <div class="text-xl font-black text-slate-900 mt-1"><!-- engines:longtail -->Mojeek · Brave · Startpage · Marginalia · Stract<!-- /engines:longtail --></div>
           <p class="text-sm text-slate-600 mt-1" data-i18n="engines.tier3.p">Niezależne roboty i wyszukiwarki prywatnościowe. Mniejszy zasięg, zero konkurencji — i prawdziwy ruch z crawla.</p>
         </div>
         <div class="mono text-[11px] text-fuchsia-700 border border-fuchsia-200 bg-fuchsia-50 rounded-xl px-3 py-2" data-i18n="engines.matched">dopasowane do kraju/języka</div>

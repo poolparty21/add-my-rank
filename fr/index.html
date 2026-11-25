@@ -87,7 +87,7 @@
   }
 </style>
 <!-- structured-data -->
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://add-my-rank.vercel.app/#organization","name":"Add My Rank","url":"https://add-my-rank.vercel.app/","logo":"https://add-my-rank.vercel.app/favicon.svg"},{"@type":"WebSite","@id":"https://add-my-rank.vercel.app/#website","url":"https://add-my-rank.vercel.app/fr","name":"Add My Rank","description":"Un vrai test d'explorabilité : score, note et les corrections qui comptent. Le boost complet vous inscrit sur 14 moteurs de recherche.","inLanguage":"fr","publisher":{"@id":"https://add-my-rank.vercel.app/#organization"}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://add-my-rank.vercel.app/#organization","name":"Add My Rank","url":"https://add-my-rank.vercel.app/","logo":"https://add-my-rank.vercel.app/favicon.svg"},{"@type":"WebSite","@id":"https://add-my-rank.vercel.app/#website","url":"https://add-my-rank.vercel.app/fr","name":"Add My Rank","description":"Un vrai test d'explorabilité : score, note et les corrections qui comptent. Le boost complet vous inscrit sur 14 moteurs de recherche.","inLanguage":"fr","publisher":{"@id":"https://add-my-rank.vercel.app/#organization"}},{"@type":"FAQPage","@id":"https://add-my-rank.vercel.app/fr#faq","url":"https://add-my-rank.vercel.app/fr","inLanguage":"fr","mainEntity":[{"@type":"Question","name":"Que reçois-je exactement ?","acceptedAnswer":{"@type":"Answer","text":"Un rapport complet à ouvrir tout de suite : un score sur 100, une note, une répartition en cinq catégories (indexabilité, on-page, technique, mobile, vitesse) et les 17 contrôles avec le constat et la correction exacte. En plus, l’inscription sur 14 moteurs."}},{"@type":"Question","name":"Je ne suis pas technique, vais-je comprendre ?","acceptedAnswer":{"@type":"Answer","text":"C’est conçu pour ça. Chaque constat dit ce que c’est, pourquoi ça compte et quoi faire. Si une correction vous dépasse, rendez-nous le rapport et nous l’appliquons."}},{"@type":"Question","name":"Serai-je n°1 sur Google demain ?","acceptedAnswer":{"@type":"Answer","text":"Non — et fuyez quiconque le promet. Vous obtenez l’inscription sur 14 moteurs, des pings IndexNow et chaque problème d’exploration expliqué. Le classement dépend du contenu et de la concurrence, mais sans explorabilité, rien n’est possible."}},{"@type":"Question","name":"Où nous inscrivez-vous exactement ?","acceptedAnswer":{"@type":"Answer","text":"Canaux officiels uniquement : Google Search Console, Bing Webmaster Tools (qui alimente aussi DuckDuckGo et Yahoo), Baidu Zhanzhang, Yandex Webmaster, Naver Search Advisor, Seznam Webmaster, plus les pings IndexNow et les moteurs de niveau 3 selon votre pays et votre langue."}},{"@type":"Question","name":"Fabriquez-vous des backlinks spam ?","acceptedAnswer":{"@type":"Answer","text":"Non — jamais. Les réseaux de liens à grande échelle violent les règles anti-spam de Google et peuvent pénaliser votre site. Votre boost, ce sont des soumissions, des pings et de l’explorabilité : du travail propre qui aide sans nuire."}}]}]}</script>
 <!-- /structured-data -->
 </head>
 <body class="bg-[#f6f7ff] text-slate-700 antialiased">
@@ -327,7 +327,7 @@
       <div class="flex flex-wrap items-center justify-between gap-4">
         <div>
           <div class="text-[11px] uppercase tracking-widest text-emerald-700 font-bold" data-i18n="engines.tier1.label">Niveau 1 — toujours inclus</div>
-          <div class="text-xl font-black text-slate-900 mt-1">Google · Bing · DuckDuckGo</div>
+          <div class="text-xl font-black text-slate-900 mt-1"><!-- engines:core -->Google · Bing · DuckDuckGo<!-- /engines:core --></div>
           <p class="text-sm text-slate-600 mt-1" data-i18n="engines.tier1.p">Soumission officielle via Search Console et Bing Webmaster Tools, plus ping du sitemap quand c’est pris en charge.</p>
         </div>
         <div class="mono text-[11px] text-emerald-700 border border-emerald-200 bg-emerald-50 rounded-xl px-3 py-2" data-i18n="engines.included">inclus</div>
@@ -335,24 +335,24 @@
     </div>
     <div class="card-hover glass border border-slate-200 rounded-3xl p-6">
       <div class="text-[11px] uppercase tracking-widest text-indigo-700 font-bold" data-i18n="engines.tier2.label">Niveau 2 — géants régionaux</div>
-      <div class="text-lg font-black text-slate-900 mt-1">Yandex · Baidu · Naver</div>
+      <div class="text-lg font-black text-slate-900 mt-1"><!-- engines:giants -->Yandex · Baidu · Naver<!-- /engines:giants --></div>
       <p class="text-sm text-slate-600 mt-2 leading-relaxed" data-i18n="engines.tier2.p">Russie, Chine, Corée. Plus d’un milliard de recherches par jour se font hors de Google. Soumission via les canaux officiels.</p>
     </div>
     <div class="card-hover glass border border-slate-200 rounded-3xl p-6">
       <div class="text-[11px] uppercase tracking-widest text-indigo-700 font-bold" data-i18n="engines.tier2b.label">Niveau 2 — champions locaux</div>
-      <div class="text-lg font-black text-slate-900 mt-1">Seznam · Yahoo! JP · Yahoo! TW</div>
+      <div class="text-lg font-black text-slate-900 mt-1"><!-- engines:local -->Seznam · Yahoo! JP · Yahoo! TW<!-- /engines:local --></div>
       <p class="text-sm text-slate-600 mt-2 leading-relaxed" data-i18n="engines.tier2b.p">Tchéquie, Japon, Taïwan — des marchés où le moteur local dépasse Google.</p>
     </div>
     <div class="card-hover glass border border-slate-200 rounded-3xl p-6">
       <div class="text-[11px] uppercase tracking-widest text-indigo-700 font-bold" data-i18n="engines.tier2c.label">Niveau 2 — indépendants</div>
-      <div class="text-lg font-black text-slate-900 mt-1">Mojeek · Brave · Startpage</div>
+      <div class="text-lg font-black text-slate-900 mt-1"><!-- engines:independent -->Mojeek · Brave · Startpage<!-- /engines:independent --></div>
       <p class="text-sm text-slate-600 mt-2 leading-relaxed" data-i18n="engines.tier2c.p">Des robots indépendants et respectueux de la vie privée. Ils apportent du vrai trafic, et presque personne n’y rivalise.</p>
     </div>
     <div class="card-hover glass border border-slate-200 rounded-3xl p-6 lg:col-span-3">
       <div class="flex flex-wrap items-center justify-between gap-4">
         <div>
           <div class="text-[11px] uppercase tracking-widest text-fuchsia-700 font-bold" data-i18n="engines.tier3.label">Niveau 3 — la longue traîne</div>
-          <div class="text-xl font-black text-slate-900 mt-1">Mojeek · Brave Search · Startpage · Marginalia · Stract</div>
+          <div class="text-xl font-black text-slate-900 mt-1"><!-- engines:longtail -->Mojeek · Brave · Startpage · Marginalia · Stract<!-- /engines:longtail --></div>
           <p class="text-sm text-slate-600 mt-1" data-i18n="engines.tier3.p">Robots indépendants et moteurs privés. Portée plus faible, zéro concurrence, et du vrai trafic de crawl vers votre site.</p>
         </div>
         <div class="mono text-[11px] text-fuchsia-700 border border-fuchsia-200 bg-fuchsia-50 rounded-xl px-3 py-2" data-i18n="engines.matched">selon pays/langue</div>

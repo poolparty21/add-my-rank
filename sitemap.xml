@@ -64,4 +64,100 @@
     <xhtml:link rel="alternate" hreflang="fr" href="https://add-my-rank.vercel.app/fr/boost"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://add-my-rank.vercel.app/boost"/>
   </url>
+  <url>
+    <loc>https://add-my-rank.vercel.app/submit/google</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://add-my-rank.vercel.app/submit/google"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://add-my-rank.vercel.app/de/submit/google"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://add-my-rank.vercel.app/pl/submit/google"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://add-my-rank.vercel.app/fr/submit/google"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://add-my-rank.vercel.app/submit/google"/>
+  </url>
+  <url>
+    <loc>https://add-my-rank.vercel.app/de/submit/google</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://add-my-rank.vercel.app/submit/google"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://add-my-rank.vercel.app/de/submit/google"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://add-my-rank.vercel.app/pl/submit/google"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://add-my-rank.vercel.app/fr/submit/google"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://add-my-rank.vercel.app/submit/google"/>
+  </url>
+  <url>
+    <loc>https://add-my-rank.vercel.app/pl/submit/google</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://add-my-rank.vercel.app/submit/google"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://add-my-rank.vercel.app/de/submit/google"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://add-my-rank.vercel.app/pl/submit/google"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://add-my-rank.vercel.app/fr/submit/google"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://add-my-rank.vercel.app/submit/google"/>
+  </url>
+  <url>
+    <loc>https://add-my-rank.vercel.app/fr/submit/google</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://add-my-rank.vercel.app/submit/google"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://add-my-rank.vercel.app/de/submit/google"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://add-my-rank.vercel.app/pl/submit/google"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://add-my-rank.vercel.app/fr/submit/google"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://add-my-rank.vercel.app/submit/google"/>
+  </url>
+  <url>
+    <loc>https://add-my-rank.vercel.app/submit/bing</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://add-my-rank.vercel.app/submit/bing"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://add-my-rank.vercel.app/de/submit/bing"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://add-my-rank.vercel.app/pl/submit/bing"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://add-my-rank.vercel.app/fr/submit/bing"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://add-my-rank.vercel.app/submit/bing"/>
+  </url>
+  <url>
+    <loc>https://add-my-rank.vercel.app/de/submit/bing</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://add-my-rank.vercel.app/submit/bing"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://add-my-rank.vercel.app/de/submit/bing"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://add-my-rank.vercel.app/pl/submit/bing"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://add-my-rank.vercel.app/fr/submit/bing"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://add-my-rank.vercel.app/submit/bing"/>
+  </url>
+  <url>
+    <loc>https://add-my-rank.vercel.app/pl/submit/bing</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://add-my-rank.vercel.app/submit/bing"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://add-my-rank.vercel.app/de/submit/bing"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://add-my-rank.vercel.app/pl/submit/bing"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://add-my-rank.vercel.app/fr/submit/bing"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://add-my-rank.vercel.app/submit/bing"/>
+  </url>
+  <url>
+    <loc>https://add-my-rank.vercel.app/fr/submit/bing</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://add-my-rank.vercel.app/submit/bing"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://add-my-rank.vercel.app/de/submit/bing"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://add-my-rank.vercel.app/pl/submit/bing"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://add-my-rank.vercel.app/fr/submit/bing"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://add-my-rank.vercel.app/submit/bing"/>
+  </url>
+  <url>
+    <loc>https://add-my-rank.vercel.app/submit/duckduckgo</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://add-my-rank.vercel.app/submit/duckduckgo"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://add-my-rank.vercel.app/de/submit/duckduckgo"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://add-my-rank.vercel.app/pl/submit/duckduckgo"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://add-my-rank.vercel.app/fr/submit/duckduckgo"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://add-my-rank.vercel.app/submit/duckduckgo"/>
+  </url>
+  <url>
+    <loc>https://add-my-rank.vercel.app/de/submit/duckduckgo</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://add-my-rank.vercel.app/submit/duckduckgo"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://add-my-rank.vercel.app/de/submit/duckduckgo"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://add-my-rank.vercel.app/pl/submit/duckduckgo"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://add-my-rank.vercel.app/fr/submit/duckduckgo"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://add-my-rank.vercel.app/submit/duckduckgo"/>
+  </url>
+  <url>
+    <loc>https://add-my-rank.vercel.app/pl/submit/duckduckgo</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://add-my-rank.vercel.app/submit/duckduckgo"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://add-my-rank.vercel.app/de/submit/duckduckgo"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://add-my-rank.vercel.app/pl/submit/duckduckgo"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://add-my-rank.vercel.app/fr/submit/duckduckgo"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://add-my-rank.vercel.app/submit/duckduckgo"/>
+  </url>
+  <url>
+    <loc>https://add-my-rank.vercel.app/fr/submit/duckduckgo</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://add-my-rank.vercel.app/submit/duckduckgo"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://add-my-rank.vercel.app/de/submit/duckduckgo"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://add-my-rank.vercel.app/pl/submit/duckduckgo"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://add-my-rank.vercel.app/fr/submit/duckduckgo"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://add-my-rank.vercel.app/submit/duckduckgo"/>
+  </url>
 </urlset>

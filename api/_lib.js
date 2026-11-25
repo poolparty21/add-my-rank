@@ -15,6 +15,7 @@
 
 const dns = require('node:dns').promises;
 const crypto = require('node:crypto');
+const { allNames: ALL_ENGINES, forCountry } = require('../engines.js');
 
 const UA = 'AddMyRankBot/1.0 (+https://addmyrank.vercel.app; crawlability audit)';
 const FETCH_TIMEOUT_MS = 8000;
@@ -336,6 +337,7 @@ async function runScan(targetUrl) {
   // 1. Fetch the homepage (follows redirects, every hop validated).
   const home = await safeFetch(start.toString());
   const finalUrl = home.url;
+
   const html = home.body.toString('utf8');
   const doc = extractHtml(html);
 
@@ -706,15 +708,15 @@ function readBody(req) {
   });
 }
 
-/** The full engine fleet — also used to validate engine picks at checkout. */
-const ALL_ENGINES = ['Google', 'Bing', 'DuckDuckGo', 'Yandex', 'Baidu', 'Naver', 'Seznam', 'Yahoo! Japan',
-  'Yahoo! Taiwan', 'Mojeek', 'Brave Search', 'Startpage', 'Marginalia', 'Stract'];
+/**
+ * The full engine fleet — also used to validate engine picks at checkout.
+ * Names come from engines.js, which is the single source for the fleet, so a
+ * report, a checkout payload and a boost checkbox can never disagree.
+ */
 
 /** Priority ordering + notes for the engine fleet, based on market targeting. */
 function enginePlan({ country, language, medium }) {
-  const primary = {
-    RU: 'Yandex', CN: 'Baidu', KR: 'Naver', CZ: 'Seznam', JP: 'Yahoo! Japan', TW: 'Yahoo! Taiwan',
-  }[country];
+  const primary = (forCountry(country) || {}).name;
   const all = ALL_ENGINES;
   const notes = [];
   if (primary) notes.push(`${primary} is the dominant engine for your market, so it is submitted first.`);

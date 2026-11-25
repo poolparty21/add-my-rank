@@ -184,6 +184,13 @@ const server = http.createServer((req, res) => {
   } catch {
     return send(res, 400, 'Bad request');
   }
+
+  // Clean URLs for generated sub-pages, mirroring vercel.json cleanUrls:
+  // /submit/google → submit/google.html
+  if (!path.extname(decoded)) {
+    const candidate = '.' + decoded.replace(/\/+$/, '') + '.html';
+    if (fs.existsSync(path.resolve(ROOT, candidate))) return serveStatic(req, res, candidate);
+  }
   serveStatic(req, res, '.' + decoded);
 });
 
