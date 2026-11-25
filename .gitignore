@@ -3,3 +3,10 @@
 
 .preview-server.log
 .dev.log
+
+# Local scan and preview artifacts (never commit these)
+.api-*.json
+.dev-preview.*
+.preview-url*
+.sample-*.json
+.sample-token.txt
