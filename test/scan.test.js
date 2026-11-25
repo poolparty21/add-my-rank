@@ -373,6 +373,32 @@ test('emailing an order reuses its stored report instead of crawling again', asy
   assert.ok(mailed.text.includes('#t=' + built.token), 'the emailed link carries the stored token');
 });
 
+test('a non-2xx final response fails the scan instead of scoring the error page', async () => {
+  const dns = require('node:dns').promises;
+  const realLookup = dns.lookup;
+  const realFetch = global.fetch;
+
+  dns.lookup = async () => [{ address: '93.184.216.34', family: 4 }];
+  global.fetch = async () => new Response(
+    '<!doctype html><html><head><title>404 Not Found</title></head><body>Not here</body></html>',
+    { status: 404, headers: { 'content-type': 'text/html' } }
+  );
+
+  try {
+    const { runScan } = require('../api/_lib.js');
+    await assert.rejects(() => runScan('https://www.flightmonster.store/dummy-ticket/'), (err) => {
+      assert.equal(err.name, 'ScanError');
+      assert.equal(err.status, 422);
+      assert.equal(err.code, 'target_http_error');
+      assert.match(err.message, /HTTP 404 \(Not Found\)/);
+      assert.match(err.message, /\/dummy-ticket\//);
+      return true;
+    });
+  } finally {
+    dns.lookup = realLookup;
+    global.fetch = realFetch;
+  }
+});
 
 test('build-locales check passes', () => {
   const result = spawnSync(process.execPath, ['build-locales.js', '--check'], {

@@ -23,6 +23,12 @@ const MAX_BYTES = 3 * 1024 * 1024; // 3 MB per response
 const MAX_REDIRECTS = 5;
 const MAX_IMAGE_PROBES = 12;
 
+/** Readable names for the statuses a scanned page is most likely to return. */
+const HTTP_STATUS_MEANING = {
+  400: 'Bad Request', 401: 'Unauthorized', 403: 'Forbidden', 404: 'Not Found', 410: 'Gone',
+  429: 'Too Many Requests', 500: 'Server Error', 502: 'Bad Gateway', 503: 'Service Unavailable', 504: 'Gateway Timeout',
+};
+
 /** Thrown for problems we can explain to the customer. */
 class ScanError extends Error {
   constructor(message, status = 400, code = '') {
@@ -338,6 +344,18 @@ async function runScan(targetUrl) {
   const home = await safeFetch(start.toString());
   const finalUrl = home.url;
 
+  // A page that does not answer successfully is not a site we can grade.
+  // Scoring an error page would turn "404 Not Found" into a confident grade
+  // built from its empty markup, which is worse than saying nothing.
+  if (home.status < 200 || home.status > 299) {
+    const meaning = HTTP_STATUS_MEANING[home.status] ? ` (${HTTP_STATUS_MEANING[home.status]})` : '';
+    throw new ScanError(
+      `${finalUrl.origin}${finalUrl.pathname} answered HTTP ${home.status}${meaning} instead of a page we can audit. ` +
+      'There is nothing to score at that address — check the link is correct and the page loads in a browser.',
+      422,
+      'target_http_error'
+    );
+  }
   const html = home.body.toString('utf8');
   const doc = extractHtml(html);
 
