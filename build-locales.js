@@ -168,7 +168,13 @@ function structuredData(lang, page, t) {
     });
   }
   const json = JSON.stringify({ '@context': 'https://schema.org', '@graph': graph }).replace(/</g, '\\u003c');
-  return '<script type="application/ld+json">' + json + '</script>';
+  // The markers let the next run replace exactly this block. Any other
+  // structured data a page grows (FAQ, breadcrumbs, …) is left alone.
+  return (
+    '<!-- structured-data -->\n' +
+    '<script type="application/ld+json">' + json + '</script>\n' +
+    '<!-- /structured-data -->'
+  );
 }
 
 function applyHead(html, lang, page, t) {
@@ -199,11 +205,10 @@ function applyHead(html, lang, page, t) {
     (m, a, _old, c) => a + t(page.descKey).replace(/"/g, '&quot;') + c);
   out = out.replace(/(<meta property="og:url" content=")([^"]*)(")/,
     (m, a, _old, c) => a + urlFor(lang, page.kind) + c);
-  // Generated pages no longer contain the placeholder, so strip the previous
-  // JSON-LD block before adding the locale's version. Otherwise a localized
-  // page would inherit the English block from the generated English page.
-  out = out.replace(/<!-- structured-data -->\n?/g, '');
-  out = out.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>\n?/g, '');
+  // Remove only the block this script generated, identified by its markers, so
+  // a localized page does not inherit the English block from the template while
+  // any hand-written structured data on the page survives regeneration.
+  out = out.replace(/<!-- structured-data -->[\s\S]*?<!-- \/structured-data -->\n?/g, '');
   const data = structuredData(lang, page, t);
   if (data) out = out.replace('</head>', data + '\n</head>');
   return out;
